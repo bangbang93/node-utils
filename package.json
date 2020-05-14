@@ -16,6 +16,8 @@
     "**/*.js.map"
   ],
   "devDependencies": {
+    "@nestjs/common": "^7.0.11",
+    "@nestjs/core": "^7.0.11",
     "@nestjs/swagger": "^4.5.5",
     "@types/ms": "^0.7.31",
     "@types/node": "^14.0.1"
