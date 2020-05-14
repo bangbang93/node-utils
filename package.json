@@ -1,14 +1,19 @@
 {
   "name": "@bangbang93/utils",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "type": "index.d.ts",
   "dependencies": {
     "ms": "^2.1.2"
   },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
   "files": [
-    "*/**/.js",
-    "*/**/.d.ts"
+    "*/**/*.js",
+    "*/**/*.d.ts",
+    "*/**/*.js.map"
   ],
   "devDependencies": {
     "@nestjs/swagger": "^4.5.5",
