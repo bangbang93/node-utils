@@ -11,9 +11,9 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "*/**/*.js",
-    "*/**/*.d.ts",
-    "*/**/*.js.map"
+    "**/*.js",
+    "**/*.d.ts",
+    "**/*.js.map"
   ],
   "devDependencies": {
     "@nestjs/swagger": "^4.5.5",
