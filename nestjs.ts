@@ -1,5 +1,6 @@
+import {Constructor} from '@nestjs/common/utils/merge-with-values.util'
 import {NestFactory} from '@nestjs/core'
-import {ApiOperation, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
+import {ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 import {IsInt, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
@@ -34,4 +35,16 @@ export class PagedDto {
   get skip() {
     return (this.page - 1) * this.limit
   }
+}
+
+export interface PagedResDto<T> {
+  count: number
+  data: T[]
+}
+export function PagedResDto<T>(T: T): Constructor<PagedResDto<T>> {
+  class PagedRes implements PagedResDto<typeof T> {
+    @ApiProperty() count: number
+    @ApiProperty({type: [T]}) data: typeof T[]
+  }
+  return PagedRes
 }
