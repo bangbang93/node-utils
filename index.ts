@@ -19,8 +19,8 @@ export function mongoBetween<T>(data: T[]): {$lte: T; $gte: T} {
 
 export async function withSession(
   fn: (session: ClientSession) => Promise<void>,
-  session: ClientSession | null,
-  startSession: (...args: unknown[]) => Promise<ClientSession>
+  startSession: (...args: unknown[]) => Promise<ClientSession>,
+  session?: ClientSession | null,
   ): Promise<void> {
   const useExists = !!session
   if (useExists) {
