@@ -29,3 +29,10 @@ export async function withSession(
   session = await startSession()
   await session.withTransaction(fn)
 }
+
+export type Fn = (...args: unknown[]) => unknown
+export interface Constructor {
+  prototype: Prototype
+  new(...args: unknown[]): unknown
+}
+export type Prototype = Record<string | symbol, unknown>
