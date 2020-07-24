@@ -31,8 +31,8 @@ export async function withSession(
 }
 
 export type Fn = (...args: unknown[]) => unknown
-export interface Constructor {
+export interface Constructor<T = unknown> {
   prototype: Prototype
-  new(...args: unknown[]): unknown
+  new(...args: unknown[]): T
 }
-export type Prototype = Record<string | symbol, unknown>
+export type Prototype = object

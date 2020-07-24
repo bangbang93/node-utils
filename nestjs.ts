@@ -1,9 +1,9 @@
-import {Constructor} from '@nestjs/common/utils/merge-with-values.util'
 import {NestFactory} from '@nestjs/core'
 import {ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 import {IsInt, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
+import {Constructor} from './index'
 
 export const ApiSummary = (summary: string) => ApiOperation({summary})
 
@@ -37,14 +37,25 @@ export class PagedDto {
   }
 }
 
+export type Paged<T> = PagedResDto<T>
 export interface PagedResDto<T> {
   count: number
   data: T[]
 }
-export function PagedResDto<T>(T: T): Constructor<PagedResDto<T>> {
-  class PagedRes implements PagedResDto<typeof T> {
+export function PagedResDto<T extends Constructor>(constructor: T): Constructor<PagedResDto<T>> {
+  const name = `Paged${constructor.name}`
+
+  class PagedRes implements PagedResDto<T> {
     @ApiProperty() count: number
-    @ApiProperty({type: [T]}) data: typeof T[]
+    @ApiProperty({type: [constructor]}) data: T[]
   }
+
+  Reflect.defineProperty(PagedRes, 'name', {
+    writable: false,
+    enumerable: false,
+    configurable: true,
+    value: name,
+  })
+
   return PagedRes
 }
