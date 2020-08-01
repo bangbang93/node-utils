@@ -1,7 +1,6 @@
 import * as escapeStringRegexp from 'escape-string-regexp'
-import {isNil} from 'lodash'
-import {Types} from 'mongoose'
-import {mongoBetween} from './index'
+import {isNil, max, min} from 'lodash'
+import {ClientSession, Connection, Types} from 'mongoose'
 import ObjectId = Types.ObjectId
 
 export type IdType = string | ObjectId
@@ -26,6 +25,13 @@ export function toObjectId(id: IdType): ObjectId {
   if (!id) throw new TypeError('id cannot be empty')
   if (typeof id === 'string') return new Types.ObjectId(id)
   return id
+}
+
+export function mongoBetween<T>(data: T[]): { $lte: T; $gte: T } {
+  return {
+    $lte: max(data),
+    $gte: min(data),
+  }
 }
 
 export function buildQuery(search: object, args: IBuildQueryArguments): Record<string, unknown> {
@@ -94,4 +100,24 @@ export function buildQuery(search: object, args: IBuildQueryArguments): Record<s
     }
     return {s, m}
   }
+}
+
+/**
+ *
+ * @param fn
+ * @param connection
+ * @param session set false to skip session
+ */
+export async function withSession(
+  fn: (session: ClientSession) => Promise<void>,
+  connection: Connection,
+  session?: ClientSession | null | false,
+): Promise<void> {
+  if (session === false) return
+  const useExists = !!session
+  if (useExists) {
+    return fn(session)
+  }
+  session = await connection.startSession()
+  await session.withTransaction(fn)
 }
