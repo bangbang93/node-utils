@@ -1,6 +1,6 @@
 import {NestFactory} from '@nestjs/core'
 import {ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
-import {IsInt, IsOptional, Min} from 'class-validator'
+import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
@@ -35,6 +35,10 @@ export class PagedDto {
   get skip() {
     return (this.page - 1) * this.limit
   }
+}
+
+export class IdDto {
+  @ApiProperty() @IsMongoId() id: string
 }
 
 export type Paged<T> = PagedResDto<T>
