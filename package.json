@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@sindresorhus/is": "^3.0.0",
+    "bluebird": "^3.7.2",
     "escape-string-regexp": "^4.0.0",
     "lodash": "^4.17.19",
     "ms": "^2.1.2",
@@ -26,6 +27,7 @@
     "@nestjs/common": "^7.0.11",
     "@nestjs/core": "^7.3.2",
     "@nestjs/swagger": "^4.5.5",
+    "@types/bluebird": "^3.5.32",
     "@types/lodash": "^4.14.157",
     "@types/mongoose": "^5.7.29",
     "@types/ms": "^0.7.31",

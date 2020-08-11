@@ -1,6 +1,8 @@
+import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Types} from 'mongoose'
+import {ClientSession, Connection, Document, Model, Types} from 'mongoose'
+import {Paged} from './nestjs'
 import ObjectId = Types.ObjectId
 
 export type IdType = string | ObjectId
@@ -120,4 +122,11 @@ export async function withSession(
   }
   session = await connection.startSession()
   await session.withTransaction(fn)
+}
+
+export async function findAndCount<T extends Document>(model: Model<T>, query: object, skip: number, limit: number): Promise<Paged<T>> {
+  return Bluebird.props({
+    data: model.find(query).skip(skip).limit(limit).exec(),
+    count: model.count(query),
+  })
 }
