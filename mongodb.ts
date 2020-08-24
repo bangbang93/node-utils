@@ -124,6 +124,14 @@ export async function withSession(
   await session.withTransaction(fn)
 }
 
+export async function saveDocs(docs: Document[], connection: Connection, session?: ClientSession): Promise<void> {
+  await withSession(async (session) => {
+    for (const doc of docs) {
+      await doc.save({session})
+    }
+  }, connection, session)
+}
+
 export async function findAndCount<T extends Document>(model: Model<T>, query: object, skip: number, limit: number): Promise<Paged<T>> {
   return Bluebird.props({
     data: model.find(query).skip(skip).limit(limit).exec(),
