@@ -6,13 +6,13 @@ import {Paged} from './nestjs'
 import ObjectId = Types.ObjectId
 
 export type IdType = string | ObjectId
-type BuildQueryField = string | [string, string] | {s: string, m: string}
-interface IBuildQueryArguments {
-  equalFields?: BuildQueryField[],
-  matchFields?: BuildQueryField[],
-  idFields?: BuildQueryField[],
-  betweenFields?: BuildQueryField[],
-  inFields?: BuildQueryField[],
+type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T, m: string}
+interface IBuildQueryArguments<T extends object> {
+  equalFields?: BuildQueryField<T>[],
+  matchFields?: BuildQueryField<T>[],
+  idFields?: BuildQueryField<T>[],
+  betweenFields?: BuildQueryField<T>[],
+  inFields?: BuildQueryField<T>[],
   query?: object
 }
 
@@ -36,7 +36,7 @@ export function mongoBetween<T>(data: T[]): { $lte: T; $gte: T } {
   }
 }
 
-export function buildQuery(search: object, args: IBuildQueryArguments): Record<string, unknown> {
+export function buildQuery<T extends object>(search: T, args: IBuildQueryArguments<T>): Record<string, unknown> {
   const query: Record<string, unknown> = (args.query ?? {}) as Record<string, unknown>
   if (args.equalFields) {
     for (const field of args.equalFields) {
