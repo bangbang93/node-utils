@@ -73,7 +73,7 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
     }
   }
   if (args.inFields) {
-    for (const field of args.betweenFields) {
+    for (const field of args.inFields) {
       const {s, m} = getFields(field)
       if (s in search && search[s] !== undefined) {
         const d = search[s]
