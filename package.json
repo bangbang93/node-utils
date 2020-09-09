@@ -26,15 +26,17 @@
   "devDependencies": {
     "@nestjs/common": "^7.0.11",
     "@nestjs/core": "^7.3.2",
+    "@nestjs/mongoose": "^7.0.2",
     "@nestjs/swagger": "^4.5.5",
     "@types/bluebird": "^3.5.32",
     "@types/lodash": "^4.14.157",
     "@types/mongoose": "^5.7.29",
     "@types/ms": "^0.7.31",
     "@types/node": "^14.0.1",
-    "class-validator": "^0.12.2",
     "class-transformer": "^0.3.1",
-    "mongoose": "^5.9.25",
+    "class-validator": "^0.12.2",
+    "mongoose": "^5.10.3",
+    "mongoose-typescript": "^1.0.6",
     "rxjs": "^6.6.0",
     "typescript": "^3.9.7"
   }
