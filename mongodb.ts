@@ -137,8 +137,7 @@ export async function findAndCount<T extends Document>(model: Model<T>, query: o
   queryHelper?: (query: DocumentQuery<T[], T>) => void): Promise<Paged<T>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {
-    const res = queryHelper(q)
-    if (is.promise(res)) await res
+    queryHelper(q)
   }
   return Bluebird.props({
     data: q.exec(),
