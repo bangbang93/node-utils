@@ -1,4 +1,6 @@
 import ms = require('ms')
+import {prop} from 'mongoose-typescript'
+import {deprecate} from 'util'
 
 export function second(str: string): number {
   return ms(str) / 1000
@@ -14,3 +16,13 @@ export interface Constructor<T = unknown> {
   new(...args: unknown[]): T
 }
 export type Prototype = object
+
+export function Deprecated(message: string): MethodDecorator {
+  return (target, propertyKey, descriptor) => {
+    if (descriptor.get) {
+      descriptor.get = deprecate(descriptor.get, message)
+    } else {
+      descriptor.get = deprecate(() => descriptor.value, message)
+    }
+  }
+}

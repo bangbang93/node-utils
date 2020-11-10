@@ -110,12 +110,14 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
  * @param fn
  * @param connection
  * @param session set false to skip session
+ *
+ * session.withTransaction返回是void，所以不能带上返回类型
  */
-export async function withSession(
-  fn: (session: ClientSession) => Promise<void>,
+export async function withSession<T extends void>(
+  fn: (session: ClientSession) => Promise<T>,
   connection: Connection,
   session?: ClientSession | null | false,
-): Promise<void> {
+): Promise<T> {
   if (session === false) return
   const useExists = !!session
   if (useExists) {
