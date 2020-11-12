@@ -1,10 +1,9 @@
-import is from '@sindresorhus/is'
 import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Document, DocumentQuery, Model, Query, Types} from 'mongoose'
+import {ClientSession, Connection, Document, DocumentQuery, Model, Types} from 'mongoose'
+import {ObjectId} from 'mongoose-typescript'
 import {Paged} from './nestjs'
-import ObjectId = Types.ObjectId
 
 export type IdType = string | ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T, m: string}
