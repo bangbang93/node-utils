@@ -63,3 +63,5 @@ export function PagedResDto<T extends Constructor>(constructor: T): Constructor<
 
   return PagedRes
 }
+
+export * from './nestjs/base-crud-service'

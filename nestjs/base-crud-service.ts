@@ -1,5 +1,4 @@
-import {Injectable} from '@nestjs/common'
-import {Model, Document, DocumentQuery} from 'mongoose'
+import {Document, Model} from 'mongoose'
 import {ObjectId} from 'mongoose-typescript'
 import {DEFAULT_LIMIT} from '../index'
 import {findAndCount, IdType, toObjectId} from '../mongodb'
@@ -9,7 +8,6 @@ interface IBaseDocument extends Document {
   _id: ObjectId
 }
 
-@Injectable()
 export abstract class BaseCrudService<T extends IBaseDocument> {
   protected constructor(
     private readonly model: Model<T>
