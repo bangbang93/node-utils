@@ -135,7 +135,7 @@ export async function saveDocs(docs: Document[], connection: Connection, session
 }
 
 export async function findAndCount<T extends Document>(model: Model<T>, query: object, skip: number, limit: number,
-  queryHelper?: (query: DocumentQuery<T[], T>) => void): Promise<Paged<T>> {
+  queryHelper?: (query: ReturnType<Model<T>['find']>) => void): Promise<Paged<T>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {
     queryHelper(q)

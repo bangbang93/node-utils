@@ -28,7 +28,7 @@ export abstract class BaseCrudService<T extends IBaseDocument> {
   }
 
   public async search(query: Record<string, unknown>, skip = 0, limit = DEFAULT_LIMIT,
-    queryHelper?: (query: DocumentQuery<T[], T>) => void): Promise<Paged<T>> {
+    queryHelper?: (query: ReturnType<Model<T>['find']>) => void): Promise<Paged<T>> {
     return findAndCount(this.model, query, skip, limit, queryHelper)
   }
 
