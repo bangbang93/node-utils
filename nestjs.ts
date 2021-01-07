@@ -41,7 +41,6 @@ export class IdDto {
   @ApiProperty() @IsMongoId() id: string
 }
 
-export type Paged<T> = PagedResDto<T>
 export interface PagedResDto<T> {
   count: number
   data: T[]

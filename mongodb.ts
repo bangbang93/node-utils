@@ -3,7 +3,7 @@ import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, DocumentQuery, Model, Types} from 'mongoose'
 import {ObjectId} from 'mongoose-typescript'
-import {Paged} from './nestjs'
+import {Paged} from './index'
 
 export type IdType = string | ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T, m: string}

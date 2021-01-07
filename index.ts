@@ -1,5 +1,4 @@
 import ms = require('ms')
-import {prop} from 'mongoose-typescript'
 import {deprecate} from 'util'
 
 export function second(str: string): number {
@@ -25,4 +24,9 @@ export function Deprecated(message: string): MethodDecorator {
       descriptor.get = deprecate(() => descriptor.value, message)
     }
   }
+}
+
+export interface Paged<T> {
+  count: number
+  data: T[]
 }

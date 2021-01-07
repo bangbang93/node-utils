@@ -2,7 +2,7 @@ import {Document, Model} from 'mongoose'
 import {ObjectId} from 'mongoose-typescript'
 import {DEFAULT_LIMIT} from '../index'
 import {findAndCount, IdType, toObjectId} from '../mongodb'
-import {Paged} from '../nestjs'
+import {Paged} from '../index'
 
 interface IBaseDocument extends Document {
   _id: ObjectId
