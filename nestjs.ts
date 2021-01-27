@@ -1,5 +1,5 @@
 import {NestFactory} from '@nestjs/core'
-import {ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
+import {ApiBody, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
@@ -62,5 +62,23 @@ export function PagedResDto<T extends Constructor>(constructor: T): Constructor<
 
   return PagedRes
 }
+
+export const ApiFile = (fileName: string = 'file'): MethodDecorator => (
+  target: any,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) => {
+  ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        [fileName]: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })(target, propertyKey, descriptor);
+};
 
 export * from './nestjs/base-crud-service'
