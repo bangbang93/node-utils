@@ -1,5 +1,9 @@
+import {applyDecorators} from '@nestjs/common'
 import {NestFactory} from '@nestjs/core'
-import {ApiBody, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
+import {
+  ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule,
+} from '@nestjs/swagger'
+import {ApiImplicitBody} from '@nestjs/swagger/dist/decorators/api-implicit-body.decorator'
 import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
@@ -63,22 +67,21 @@ export function PagedResDto<T extends Constructor>(constructor: T): Constructor<
   return PagedRes
 }
 
-export const ApiFile = (fileName: string = 'file'): MethodDecorator => (
-  target: any,
-  propertyKey: string,
-  descriptor: PropertyDescriptor,
-) => {
-  ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        [fileName]: {
-          type: 'string',
-          format: 'binary',
-        },
+export function ApiFile (fileName: string = 'file'): MethodDecorator {
+  return applyDecorators(
+    ApiConsumes('multipart/form-data'),
+    ApiImplicitBody({
+      name: fileName,
+      type: 'file',
+      content: {
+        file: {
+          schema: {
+            type: 'file',
+          },
+        }
       },
-    },
-  })(target, propertyKey, descriptor);
-};
+    })
+  )
+}
 
 export * from './nestjs/base-crud-service'

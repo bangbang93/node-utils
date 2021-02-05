@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Document, DocumentQuery, Model, Types} from 'mongoose'
+import {ClientSession, Connection, Document, Model, Types} from 'mongoose'
 import {ObjectId} from 'mongoose-typescript'
 import {Paged} from './index'
 
@@ -109,21 +109,22 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
  * @param fn
  * @param connection
  * @param session set false to skip session
- *
- * session.withTransaction返回是void，所以不能带上返回类型
  */
-export async function withSession<T extends void>(
+export async function withSession<T>(
   fn: (session: ClientSession) => Promise<T>,
   connection: Connection,
   session?: ClientSession | null | false,
 ): Promise<T> {
-  if (session === false) return
-  const useExists = !!session
-  if (useExists) {
+  if (session === false) return fn(null)
+  if (!!session) {
     return fn(session)
   }
   session = await connection.startSession()
-  await session.withTransaction(fn)
+  let ret: T = undefined
+  await session.withTransaction(async (session) => {
+    ret = await fn(session)
+  })
+  return ret
 }
 
 export async function saveDocs(docs: Document[], connection: Connection, session?: ClientSession): Promise<void> {
