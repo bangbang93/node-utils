@@ -30,3 +30,5 @@ export interface Paged<T> {
   count: number
   data: T[]
 }
+
+export type ValueOf<T> = T[keyof T]
