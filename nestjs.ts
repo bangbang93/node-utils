@@ -1,4 +1,5 @@
-import {applyDecorators} from '@nestjs/common'
+import {applyDecorators, FactoryProvider} from '@nestjs/common'
+import {ModuleMetadata} from '@nestjs/common/interfaces'
 import {NestFactory} from '@nestjs/core'
 import {
   ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule,
@@ -85,3 +86,5 @@ export function ApiFile (fileName: string = 'file'): MethodDecorator {
 }
 
 export * from './nestjs/base-crud-service'
+
+export type DynamicModuleOptions<T> = Omit<FactoryProvider<T>, 'provide'> & {imports?: ModuleMetadata['imports']}
