@@ -5,3 +5,5 @@ import {IMongooseClass} from 'mongoose-typescript/lib/meta'
 export function InjectModel(model: IMongooseClass): ParameterDecorator & PropertyDecorator {
   return InjectM(getModelName(model))
 }
+
+export * from './nestjs/base-crud-service'
