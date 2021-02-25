@@ -1,3 +1,4 @@
+import is from '@sindresorhus/is'
 import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
@@ -37,6 +38,8 @@ export function mongoBetween<T>(data: T[]): { $lte: T; $gte: T } {
 }
 
 export function buildQuery<T extends object>(search: T, args: IBuildQueryArguments<T>): Record<string, unknown> {
+  if (!search) return {}
+  if (!is.object(search)) throw new TypeError('search must be an object')
   const query: Record<string, unknown> = (args.query ?? {}) as Record<string, unknown>
   if (args.equalFields) {
     for (const field of args.equalFields) {
