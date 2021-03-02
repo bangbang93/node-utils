@@ -7,7 +7,7 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
-    "@sindresorhus/is": "^3.0.0",
+    "@sindresorhus/is": "^4.0.0",
     "bluebird": "^3.7.2",
     "escape-string-regexp": "^4.0.0",
     "lodash": "^4.17.19",
