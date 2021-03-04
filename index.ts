@@ -1,4 +1,5 @@
 import ms = require('ms')
+import is from '@sindresorhus/is'
 import {deprecate} from 'util'
 
 export function second(str: string): number {
@@ -21,8 +22,8 @@ export function Deprecated(message: string): MethodDecorator {
     descriptor.writable = false
     if (descriptor.get) {
       descriptor.get = deprecate(descriptor.get, message)
-    } else {
-      descriptor.get = deprecate(() => descriptor.value, message)
+    } else if (is.function_(descriptor.value)) {
+      descriptor.value = deprecate(descriptor.value, message)
     }
   }
 }
