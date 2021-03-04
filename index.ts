@@ -19,7 +19,6 @@ export type Prototype = object
 
 export function Deprecated(message: string): MethodDecorator {
   return (target, propertyKey, descriptor) => {
-    descriptor.writable = false
     if (descriptor.get) {
       descriptor.get = deprecate(descriptor.get, message)
     } else if (is.function_(descriptor.value)) {
