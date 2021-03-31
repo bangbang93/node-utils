@@ -39,4 +39,4 @@ export function toBoolean(value: string | number | boolean): boolean {
   return [true, 'true', '1', 'yes', 1].includes(value)
 }
 
-type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
