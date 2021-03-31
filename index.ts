@@ -38,3 +38,5 @@ export function toBoolean(value: string | number | boolean): boolean {
   if (is.nullOrUndefined(value)) return value
   return [true, 'true', '1', 'yes', 1].includes(value)
 }
+
+type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
