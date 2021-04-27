@@ -1,6 +1,7 @@
 import ms = require('ms')
 import is from '@sindresorhus/is'
 import {deprecate} from 'util'
+import { mapValues } from 'lodash'
 
 export function second(str: string): number {
   return ms(str) / 1000
@@ -40,3 +41,13 @@ export function toBoolean(value: string | number | boolean): boolean {
 }
 
 export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+
+export function trimDeep<T extends Record<keyof any, unknown>>(obj: T): T {
+  return mapValues(obj, (v) => {
+    if (is.string(v)) {
+      return v.trim()
+    } if (is.plainObject(v)) {
+      return trimDeep(v)
+    } return v
+  }) as T
+}
