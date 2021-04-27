@@ -42,7 +42,7 @@ export function toBoolean(value: string | number | boolean): boolean {
 
 export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
 
-export function trimDeep<T extends Record<keyof any, unknown>>(obj: T): T {
+export function trimDeep<T extends object>(obj: T): T {
   return mapValues(obj, (v) => {
     if (is.string(v)) {
       return v.trim()
