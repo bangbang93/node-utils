@@ -86,3 +86,4 @@ export function ApiFile (fileName: string = 'file'): MethodDecorator {
 }
 
 export type DynamicModuleOptions<T> = Omit<FactoryProvider<T>, 'provide'> & {imports?: ModuleMetadata['imports']}
+
