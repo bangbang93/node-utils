@@ -146,6 +146,6 @@ export async function findAndCount<T extends Document>(model: Model<T>, query: o
   }
   return Bluebird.props({
     data: q.exec(),
-    count: model.count(query),
+    count: model.countDocuments(query),
   })
 }
