@@ -1,4 +1,4 @@
-import {applyDecorators, FactoryProvider} from '@nestjs/common'
+import {applyDecorators, FactoryProvider, Param, ParseIntPipe} from '@nestjs/common'
 import {ModuleMetadata} from '@nestjs/common/interfaces'
 import {NestFactory} from '@nestjs/core'
 import {
@@ -9,6 +9,7 @@ import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
+import {ParseMongoidPipe} from './nestjs/parse-mongoid.pipe'
 
 export const ApiSummary = (summary: string) => ApiOperation({summary})
 
@@ -87,3 +88,14 @@ export function ApiFile (fileName: string = 'file'): MethodDecorator {
 
 export type DynamicModuleOptions<T> = Omit<FactoryProvider<T>, 'provide'> & {imports?: ModuleMetadata['imports']}
 
+export function IntParam(name: string): ParameterDecorator {
+  return (target, propertyKey, parameterIndex) => {
+    Param(name, ParseIntPipe)(target, propertyKey, parameterIndex)
+  }
+}
+
+export function MongoIdParam(name: string): ParameterDecorator {
+  return (target, propertyKey, parameterIndex) => {
+    Param(name, ParseMongoidPipe)(target, propertyKey, parameterIndex)
+  }
+}
