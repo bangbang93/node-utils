@@ -1,5 +1,6 @@
 import {ArgumentsHost, Catch, ExceptionFilter, Inject} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
+import {stdSerializers} from 'bunyan'
 import {Request, Response} from 'express'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
@@ -19,6 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         this.env = configServiceOrEnv.get('NODE_ENV', 'development')
       }
     }
+    this.logger.addSerializers(stdSerializers)
   }
 
   public catch(err: Error, host: ArgumentsHost): void {
