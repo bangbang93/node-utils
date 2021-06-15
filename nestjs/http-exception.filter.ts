@@ -28,7 +28,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const status = err['status'] ?? 500
     if (status === 500) {
-      this.logger.error(err, {
+      this.logger.error({
+        err,
         reqId: req['id'],
         req: {
           method: req.method,
@@ -39,7 +40,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         },
       })
     } else {
-      this.logger.debug(err, {
+      this.logger.debug({
+        err,
         reqId: req['id'],
         req: {
           method: req.method,
