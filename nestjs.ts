@@ -9,7 +9,6 @@ import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
-import {ParseMongoidPipe} from './nestjs/parse-mongoid.pipe'
 
 export const ApiSummary = (summary: string) => ApiOperation({summary})
 
@@ -91,11 +90,5 @@ export type DynamicModuleOptions<T> = Omit<FactoryProvider<T>, 'provide'> & {imp
 export function IntParam(name: string): ParameterDecorator {
   return (target, propertyKey, parameterIndex) => {
     Param(name, ParseIntPipe)(target, propertyKey, parameterIndex)
-  }
-}
-
-export function MongoIdParam(name: string): ParameterDecorator {
-  return (target, propertyKey, parameterIndex) => {
-    Param(name, ParseMongoidPipe)(target, propertyKey, parameterIndex)
   }
 }
