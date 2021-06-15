@@ -48,5 +48,22 @@
     "mongoose": "^5.10.3",
     "mongoose-typescript": "^1.0.6",
     "rxjs": "^6.6.0"
+  },
+  "peerDependenciesMeta": {
+    "class-transformer": {
+      "optional": true
+    },
+    "class-validator": {
+      "optional": true
+    },
+    "mongoose": {
+      "optional": true
+    },
+    "mongoose-typescript": {
+      "optional": true
+    },
+    "rxjs": {
+      "optional": true
+    }
   }
 }
