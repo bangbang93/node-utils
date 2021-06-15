@@ -1,4 +1,4 @@
-import {ArgumentsHost, Catch, ExceptionFilter, Inject} from '@nestjs/common'
+import {ArgumentsHost, Catch, ExceptionFilter, Inject, OnModuleInit} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
 import {Request, Response} from 'express'
@@ -7,7 +7,7 @@ import {InjectLogger} from 'nestjs-bunyan'
 import Logger = require('bunyan')
 
 @Catch()
-export class HttpExceptionFilter implements ExceptionFilter {
+export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
   @InjectLogger() private readonly logger: Logger
   private readonly env: string
   constructor(
@@ -20,6 +20,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         this.env = configServiceOrEnv.get('NODE_ENV', 'development')
       }
     }
+  }
+
+  public onModuleInit(): void {
     this.logger.addSerializers(stdSerializers)
   }
 
