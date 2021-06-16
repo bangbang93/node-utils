@@ -5,6 +5,7 @@ import {
   ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule,
 } from '@nestjs/swagger'
 import {ApiImplicitBody} from '@nestjs/swagger/dist/decorators/api-implicit-body.decorator'
+import {ServerVariableObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
 import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
@@ -12,22 +13,36 @@ import {Constructor} from './index'
 
 export const ApiSummary = (summary: string) => ApiOperation({summary})
 
-interface IOptions {
+interface IGenerateSwaggerOptions {
   title?: string
   description?: string
   version?: string
+  prefix?: string
+  outputPath?: string
+  servers?: {
+    url: string
+    description?: string
+    variables?: Record<string, ServerVariableObject>
+  }[]
 }
 
-export async function generateSwagger(appModule, options?: IOptions) {
+export async function generateSwagger(appModule, options: IGenerateSwaggerOptions = {}) {
   const app = await NestFactory.create(appModule);
 
   const builder = new DocumentBuilder()
     .setTitle(options?.title)
     .setDescription(options?.description)
     .setVersion(options?.version)
-    .build();
-  const document = SwaggerModule.createDocument(app, builder);
-  const outputPath = path.resolve(process.cwd(), 'swagger.json');
+  if (options.prefix) {
+    app.setGlobalPrefix(options.prefix)
+  }
+  if (options.servers) {
+    for (const server of options.servers) {
+      builder.addServer(server.url, server.description, server.variables)
+    }
+  }
+  const document = SwaggerModule.createDocument(app, builder.build());
+  const outputPath = options.outputPath ?? path.resolve(process.cwd(), 'swagger.json');
   writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8'});
 
   await app.close();
