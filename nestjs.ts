@@ -1,4 +1,4 @@
-import {applyDecorators, FactoryProvider, Param, ParseIntPipe} from '@nestjs/common'
+import {applyDecorators, FactoryProvider, Param, ParseIntPipe, Type, Inject, forwardRef} from '@nestjs/common'
 import {ModuleMetadata} from '@nestjs/common/interfaces'
 import {NestFactory} from '@nestjs/core'
 import {
@@ -106,4 +106,8 @@ export function IntParam(name: string): ParameterDecorator {
   return (target, propertyKey, parameterIndex) => {
     Param(name, ParseIntPipe)(target, propertyKey, parameterIndex)
   }
+}
+
+export function InjectRef<T>(fn: () => Type<T>): ReturnType<typeof Inject> {
+  return Inject(forwardRef(fn))
 }
