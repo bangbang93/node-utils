@@ -17,7 +17,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
       if (typeof configServiceOrEnv === 'string') {
         this.env = configServiceOrEnv
       } else {
-        this.env = configServiceOrEnv.get('NODE_ENV', 'development')
+        this.env = configServiceOrEnv.get<string>('NODE_ENV', 'development')
       }
     }
   }
