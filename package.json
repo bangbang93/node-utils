@@ -37,6 +37,7 @@
     "@types/ms": "^0.7.31",
     "@types/node": "^14.0.1",
     "bunyan": "^1.8.15",
+    "dataloader": "^2.0.0",
     "express": "^4.17.1",
     "nestjs-bunyan": "^1.0.0",
     "typeorm": "^0.2.32",
@@ -45,6 +46,7 @@
   "peerDependencies": {
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "dataloader": "^2.0.0",
     "mongoose": "^5.10.3",
     "mongoose-typescript": "^1.0.6",
     "rxjs": "^7.2.0"
@@ -54,6 +56,9 @@
       "optional": true
     },
     "class-validator": {
+      "optional": true
+    },
+    "dataloader": {
       "optional": true
     },
     "mongoose": {
