@@ -7,7 +7,7 @@ export class ParseMongoidPipe implements PipeTransform<string> {
     try {
       return toObjectId(value)
     } catch (e) {
-      throw new BadRequestException('param must be mongoid')
+      throw new BadRequestException(`${metadata.data ?? 'param'} must be mongoid`)
     }
   }
 }
