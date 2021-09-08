@@ -2,7 +2,7 @@ import {applyDecorators, Controller, ControllerOptions, UseInterceptors, UsePipe
 import {GrpcInterceptor} from './grpc.interceptor'
 import {RpcValidationPipe} from './rpc-validation.pipe'
 
-export function Grpc(options?: ControllerOptions): ClassDecorator {
+export function GrpcController(options?: ControllerOptions): ClassDecorator {
   return applyDecorators(
     Controller(options),
     UsePipes(RpcValidationPipe),
