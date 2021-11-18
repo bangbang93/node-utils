@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger'
 import {ApiImplicitBody} from '@nestjs/swagger/dist/decorators/api-implicit-body.decorator'
 import {ServerVariableObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
-import {IsInt, IsMongoId, IsOptional, Min} from 'class-validator'
+import {IsInt, IsMongoId, IsOptional, Matches, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
@@ -55,6 +55,11 @@ export class PagedDto {
   get skip() {
     return (this.page - 1) * this.limit
   }
+}
+
+export class SortablePagedDto extends PagedDto {
+  /** 例： +createdAt,"+-"代表正序倒序 */
+  @IsOptional() @Matches(/^[+-].+$/) sort?: string
 }
 
 export class IdDto {
