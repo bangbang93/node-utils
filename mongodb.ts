@@ -2,9 +2,9 @@ import is from '@sindresorhus/is'
 import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Document, Model, Types} from 'mongoose'
-import {ObjectId} from 'mongoose-typescript'
-import {Paged} from './index'
+import {ClientSession, Connection, Document, Types} from 'mongoose'
+import {ObjectId, RichModelType} from 'mongoose-typescript'
+import {Constructor, Paged} from './index'
 
 export type IdType = string | ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T, m: string}
@@ -138,14 +138,14 @@ export async function saveDocs(docs: Document[], connection: Connection, session
   }, connection, session)
 }
 
-export async function findAndCount<T extends Document>(model: Model<T>, query: object, skip: number, limit: number,
-  queryHelper?: (query: ReturnType<Model<T>['find']>) => void): Promise<Paged<T>> {
+export async function findAndCount<TModel extends RichModelType<Constructor>>(model: TModel, query: object, skip: number, limit: number,
+  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<InstanceType<TModel>>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {
-    queryHelper(q)
+    queryHelper(q as ReturnType<TModel['find']>)
   }
   return Bluebird.props({
-    data: q.exec(),
+    data: q.exec() as Promise<InstanceType<TModel>[]>,
     count: model.countDocuments(query),
   })
 }
