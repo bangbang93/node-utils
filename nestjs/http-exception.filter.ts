@@ -2,6 +2,7 @@ import {ArgumentsHost, Catch, ExceptionFilter, Inject, OnModuleInit} from '@nest
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
 import {Request, Response} from 'express'
+import * as stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import Logger = require('bunyan')
@@ -60,16 +61,18 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
 
     if (this.env?.toLowerCase() !== 'production') {
       res.status(status)
-        .json({
+        .type('json')
+        .end(stringify({
           ...pick(err, 'message', 'name', 'stack'),
           ...err,
-        })
+        }))
     } else {
       res.status(status)
-        .json({
+        .type('json')
+        .end(stringify({
           ...pick(err, 'message', 'name'),
           ...omit(err, 'stack'),
-        })
+        }))
     }
   }
 }
