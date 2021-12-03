@@ -3,7 +3,7 @@ import * as Bluebird from 'bluebird'
 import * as escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, Types} from 'mongoose'
-import {ObjectId, RichModelType} from 'mongoose-typescript'
+import {ObjectId, RichModelType, DocumentType} from 'mongoose-typescript'
 import {Constructor, Paged} from './index'
 
 export type IdType = string | ObjectId
@@ -139,13 +139,13 @@ export async function saveDocs(docs: Document[], connection: Connection, session
 }
 
 export async function findAndCount<TModel extends RichModelType<Constructor>>(model: TModel, query: object, skip: number, limit: number,
-  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<InstanceType<TModel>>> {
+  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<DocumentType<InstanceType<TModel>>>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {
     queryHelper(q as ReturnType<TModel['find']>)
   }
   return Bluebird.props({
-    data: q.exec() as Promise<InstanceType<TModel>[]>,
+    data: q.exec() as Promise<DocumentType<InstanceType<TModel>>[]>,
     count: model.countDocuments(query),
   })
 }
