@@ -1,9 +1,12 @@
 import {Transform} from 'class-transformer'
 import {trim} from 'lodash'
 import {toBoolean} from './index'
-import {toObjectId} from './mongodb'
+import {ToMongoId} from './mongodb-validator'
 
-export const ToMongoId: () => PropertyDecorator = () => Transform(({value}) => toObjectId(value))
+export {
+  /** @deprecated **/
+  ToMongoId,
+}
 
 export const ToBoolean: () => PropertyDecorator = () => Transform(({value}) => toBoolean(value))
 
