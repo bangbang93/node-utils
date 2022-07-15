@@ -21,4 +21,20 @@ export function applyWrappers() {
     delete message['@type']
     return message
   }
+
+  util.Long.prototype.toJSON = function toJSON(): number | string {
+    const number = this.toNumber()
+    if (number > Number.MIN_SAFE_INTEGER && number < Number.MAX_SAFE_INTEGER) {
+      return this.toNumber()
+    } else {
+      return this.toString()
+    }
+  }
+}
+
+
+declare module "protobufjs" {
+  interface Long {
+    toJSON(): number | string
+  }
 }
