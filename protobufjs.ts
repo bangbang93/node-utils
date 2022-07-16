@@ -1,3 +1,4 @@
+import Long = require('long')
 import {util, wrappers} from 'protobufjs'
 
 export function applyWrappers() {
@@ -22,7 +23,7 @@ export function applyWrappers() {
     return message
   }
 
-  util.Long.prototype.toJSON = function toJSON(): number | string {
+  util.Long.prototype.toJSON = Long.prototype.toJSON = function toJSON(): number | string {
     const number = this.toNumber()
     if (number >= Number.MIN_SAFE_INTEGER && number <= Number.MAX_SAFE_INTEGER) {
       return this.toNumber()
@@ -34,6 +35,12 @@ export function applyWrappers() {
 
 
 declare module "protobufjs" {
+  interface Long {
+    toJSON(): number | string
+  }
+}
+
+declare module "long" {
   interface Long {
     toJSON(): number | string
   }
