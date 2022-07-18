@@ -58,6 +58,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
       })
     }
 
+    if (res.headersSent) return
     if (this.env?.toLowerCase() !== 'production') {
       res.status(status)
         .json({
