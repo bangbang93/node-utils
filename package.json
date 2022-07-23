@@ -1,6 +1,6 @@
 {
   "name": "@bangbang93/utils",
-  "version": "3.6.2",
+  "version": "4.0.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
