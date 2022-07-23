@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger'
 import {ApiImplicitBody} from '@nestjs/swagger/dist/decorators/api-implicit-body.decorator'
 import {ServerVariableObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
-import {IsInt, IsMongoId, IsOptional, Matches, Min} from 'class-validator'
+import {IsInt, IsMongoId, IsOptional, Matches, Max, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
@@ -50,7 +50,7 @@ export async function generateSwagger(appModule, options: IGenerateSwaggerOption
 
 export class PagedDto {
   @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) page: number = 1
-  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) limit: number = 10
+  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(500) limit: number = 10
 
   get skip() {
     return (this.page - 1) * this.limit
