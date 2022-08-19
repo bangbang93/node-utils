@@ -4,4 +4,4 @@ import {toBoolean} from './index'
 
 export const ToBoolean: () => PropertyDecorator = () => Transform(({value}) => toBoolean(value))
 
-export const Trim: () => PropertyDecorator = () => Transform(({value}) => trim(value))
+export const Trim: () => PropertyDecorator = () => Transform(({value}) => typeof value === 'string' ? trim(value) : value)
