@@ -3,9 +3,17 @@ import {GrpcInterceptor} from './grpc.interceptor'
 import {RpcValidationPipe} from './rpc-validation.pipe'
 
 export function GrpcController(options?: ControllerOptions): ClassDecorator {
-  return applyDecorators(
-    Controller(options),
-    UsePipes(RpcValidationPipe),
-    UseInterceptors(GrpcInterceptor),
-  )
+  if (options) {
+    return applyDecorators(
+      Controller(options),
+      UsePipes(RpcValidationPipe),
+      UseInterceptors(GrpcInterceptor),
+    )
+  } else {
+    return applyDecorators(
+      Controller(),
+      UsePipes(RpcValidationPipe),
+      UseInterceptors(GrpcInterceptor),
+    )
+  }
 }

@@ -30,9 +30,9 @@ export async function generateSwagger(appModule, options: IGenerateSwaggerOption
   const app = await NestFactory.create(appModule);
 
   const builder = new DocumentBuilder()
-    .setTitle(options?.title)
-    .setDescription(options?.description)
-    .setVersion(options?.version)
+    .setTitle(options?.title ?? 'app')
+    .setDescription(options?.description ?? '')
+    .setVersion(options?.version ?? '')
   if (options.prefix) {
     app.setGlobalPrefix(options.prefix)
   }
@@ -63,7 +63,7 @@ export class SortablePagedDto extends PagedDto {
 }
 
 export class IdDto {
-  @ApiProperty() @IsMongoId() id: string
+  @ApiProperty() @IsMongoId() id!: string
 }
 
 export interface PagedResDto<T> {
@@ -74,8 +74,8 @@ export function PagedResDto<T extends Constructor>(constructor: T): Constructor<
   const name = `Paged${constructor.name}`
 
   class PagedRes implements PagedResDto<T> {
-    @ApiProperty() count: number
-    @ApiProperty({type: [constructor]}) data: T[]
+    @ApiProperty() count!: number
+    @ApiProperty({type: [constructor]}) data!: T[]
   }
 
   Reflect.defineProperty(PagedRes, 'name', {

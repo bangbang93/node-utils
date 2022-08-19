@@ -1,6 +1,6 @@
 import is from '@sindresorhus/is'
-import * as Bluebird from 'bluebird'
-import * as escapeStringRegexp from 'escape-string-regexp'
+import Bluebird from 'bluebird'
+import escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, Types} from 'mongoose'
 import {ObjectId, RichModelType, DocumentType} from 'mongoose-typescript'
@@ -30,7 +30,7 @@ export function toObjectId(id: IdType): ObjectId {
   return id
 }
 
-export function mongoBetween<T>(data: T[]): { $lte: T; $gte: T } {
+export function mongoBetween<T>(data: T[]): { $lte?: T; $gte?: T } {
   return {
     $lte: max(data),
     $gte: min(data),
@@ -91,14 +91,10 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
     let s: string
     let m: string
     if (typeof field === 'string') {
-      if (field in search && search[field] !== undefined) {
-        s = m = field
-      }
+      s = m = field
     } else if (Array.isArray(field)) {
-      if (field[0] in search && search[field[0]] !== undefined) {
-        s = field[0]
-        m = field[1]
-      }
+      s = field[0]
+      m = field[1]
     } else {
       s = field.s
       m = field.m
@@ -114,20 +110,20 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
  * @param session set false to skip session
  */
 export async function withSession<T>(
-  fn: (session: ClientSession) => Promise<T>,
+  fn: (session?: ClientSession) => Promise<T>,
   connection: Connection,
   session?: ClientSession | null | false,
 ): Promise<T> {
-  if (session === false) return fn(null)
+  if (session === false) return fn(undefined)
   if (!!session) {
     return fn(session)
   }
   session = await connection.startSession()
-  let ret: T = undefined
+  let ret: unknown = undefined
   await session.withTransaction(async (session) => {
     ret = await fn(session)
   })
-  return ret
+  return ret as T
 }
 
 export async function saveDocs(docs: Document[], connection: Connection, session?: ClientSession): Promise<void> {
@@ -138,7 +134,7 @@ export async function saveDocs(docs: Document[], connection: Connection, session
   }, connection, session)
 }
 
-export async function findAndCount<TModel extends RichModelType<Constructor>>(model: TModel, query: object, skip: number, limit: number,
+export async function findAndCount<TModel extends RichModelType<Constructor<any>>>(model: TModel, query: object, skip: number, limit: number,
   queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<DocumentType<InstanceType<TModel>>>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {

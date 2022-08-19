@@ -2,7 +2,7 @@ import {ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject, OnModuleIn
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
 import {Request, Response} from 'express'
-import * as stringify from 'json-stringify-safe'
+import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import {VError} from 'verror'
@@ -10,8 +10,8 @@ import Logger = require('bunyan')
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
-  @InjectLogger() private readonly logger: Logger
-  private readonly env: string
+  @InjectLogger() private readonly logger!: Logger
+  private readonly env: string | undefined
   constructor(
     @Inject(ConfigService) configServiceOrEnv?: ConfigService | string
   ) {

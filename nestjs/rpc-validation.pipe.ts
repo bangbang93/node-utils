@@ -40,7 +40,7 @@ function flattenValidationErrors(
     flatten(validationErrors
       .map(error => mapChildrenToValidationErrors(error)))
       .filter(item => !!item.constraints)
-      .map(item => Object.values(item.constraints))
+      .map(item => item.constraints ? Object.values(item.constraints) : [])
   )
 }
 
@@ -50,7 +50,7 @@ function mapChildrenToValidationErrors(
   if (!(error.children && error.children.length)) {
     return [error];
   }
-  const validationErrors = [];
+  const validationErrors: ValidationError[] = [];
   for (const item of error.children) {
     if (item.children && item.children.length) {
       validationErrors.push(...mapChildrenToValidationErrors(item));
@@ -64,7 +64,7 @@ function prependConstraintsWithParentProp(
   parentError: ValidationError,
   error: ValidationError,
 ): ValidationError {
-  const constraints = {};
+  const constraints: Record<string, string> = {};
   for (const key in error.constraints) {
     constraints[key] = `${parentError.property}.${error.constraints[key]}`;
   }

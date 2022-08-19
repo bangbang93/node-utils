@@ -1,19 +1,14 @@
-import {Document, Model} from 'mongoose'
-import {ObjectId} from 'mongoose-typescript'
-import {DEFAULT_LIMIT} from '../index'
+import {Model} from 'mongoose'
+import {DocumentType, RichModelType} from 'mongoose-typescript'
+import {Constructor, DEFAULT_LIMIT, Paged} from '../index'
 import {findAndCount, IdType, toObjectId} from '../mongodb'
-import {Paged} from '../index'
 
-interface IBaseDocument extends Document {
-  _id: ObjectId
-}
-
-export abstract class BaseCrudService<T extends IBaseDocument> {
+export abstract class BaseCrudService<T extends DocumentType<any>> {
   protected constructor(
-    private readonly model: Model<T>
+    private readonly model: RichModelType<Constructor<T>>
   ) {}
 
-  public async getById(id: IdType): Promise<T> {
+  public async getById(id: IdType): Promise<T | null> {
     return this.model.findById(id)
   }
 

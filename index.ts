@@ -1,10 +1,10 @@
-import ms = require('ms')
 import is from '@sindresorhus/is'
+import ms from 'ms'
 import {deprecate} from 'util'
 import { mapValues } from 'lodash'
 
 export function second(str: string): number {
-  return ms(str) / 1000
+  return ~~(ms(str) / 1000)
 }
 
 export const DEFAULT_SKIP = 0

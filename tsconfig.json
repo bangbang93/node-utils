@@ -1,12 +1,14 @@
 {
+  "extends": "@tsconfig/node16",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2019",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": false
   },
   "exclude": [
     "node_modules"

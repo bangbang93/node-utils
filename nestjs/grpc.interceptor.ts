@@ -9,7 +9,7 @@ import {share, toArray} from 'rxjs/operators'
 
 @Injectable()
 export class GrpcInterceptor implements NestInterceptor {
-  @InjectLogger() private readonly logger: Logger
+  @InjectLogger() private readonly logger!: Logger
 
   public intercept(context: ExecutionContext, next: CallHandler): Observable<any> | Promise<Observable<any>> {
     if (context.getType() !== 'rpc') {
