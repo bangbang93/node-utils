@@ -5,17 +5,29 @@ import DataLoader = require('dataloader')
 
 type TCastId = (id: IdType) => any
 
-function equals(a: IdType, b: IdType): boolean {
+function equals(a: unknown, b: unknown): boolean {
   if (is.primitive(a)) {
     if (is.primitive(b)) {
       return a === b
     } else {
-      a = b.toString()
+      if (is.object(b)) {
+        return a === b.toString()
+      } else {
+        return a === b
+      }
     }
-  } else if ('equals' in a && is.function_(a.equals)) {
-    return a.equals(b)
+  } else if (is.object(a)) {
+    if (is.primitive(b)) {
+      return a.toString() === b
+    } else {
+      if (is.object(b)) {
+        return a.toString() === b.toString()
+      } else {
+        return a.toString() === b
+      }
+    }
   }
-  return a.toString() === b.toString()
+  return false
 }
 
 export function getBaseIdLoader<T extends Document, TId extends IdType = IdType>(model: Model<T>, castId: TCastId = toObjectId): DataLoader<TId, T | undefined> {
