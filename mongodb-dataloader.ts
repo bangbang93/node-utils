@@ -1,6 +1,5 @@
 import is from '@sindresorhus/is'
-import {Document, Model} from 'mongoose'
-import {Constructor} from './index'
+import {Model} from 'mongoose'
 import {IdType, toObjectId} from './mongodb'
 import DataLoader = require('dataloader')
 
