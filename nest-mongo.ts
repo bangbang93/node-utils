@@ -4,8 +4,8 @@ import {getModelName} from 'mongoose-typescript'
 import {IMongooseClass} from 'mongoose-typescript/lib/meta'
 import {ParseMongoidPipe} from './nestjs/parse-mongoid.pipe'
 
-export function InjectModel(model: IMongooseClass): ParameterDecorator & PropertyDecorator {
-  return InjectM(getModelName(model))
+export function InjectModel(model: IMongooseClass, connectionName?: string | undefined): ParameterDecorator & PropertyDecorator {
+  return InjectM(getModelName(model), connectionName)
 }
 
 export * from './nestjs/base-crud-service'
