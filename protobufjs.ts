@@ -1,7 +1,7 @@
-import {common, Long, Message, util, wrappers} from 'protobufjs'
+import {common, Message, util, wrappers} from 'protobufjs'
 import ITimestamp = common.ITimestamp
 
-export function applyWrappers() {
+export function applyWrappers(w = wrappers) {
   wrappers['.google.protobuf.Timestamp'] = {
     fromObject(date: unknown) {
       if (typeof date === 'string') {
