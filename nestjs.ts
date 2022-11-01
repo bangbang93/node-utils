@@ -55,6 +55,10 @@ export class PagedDto {
   get skip() {
     return (this.page - 1) * this.limit
   }
+
+  set skip(value: number) {
+    // noop
+  }
 }
 
 export class SortablePagedDto extends PagedDto {
