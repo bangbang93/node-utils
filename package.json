@@ -7,11 +7,9 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
-    "@bangbang93/eslint-config-recommended": "^0.0.2",
     "@sindresorhus/is": "^4.0.0",
     "bluebird": "^3.7.2",
     "escape-string-regexp": "^4.0.0",
-    "eslint": "^8.26.0",
     "json-stringify-safe": "^5.0.1",
     "lodash": "^4.17.19",
     "ms": "^2.1.2",
@@ -29,6 +27,7 @@
     "**/*.js.map"
   ],
   "devDependencies": {
+    "@bangbang93/eslint-config-recommended": "^0.0.2",
     "@nestjs/common": "^9.0.5",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.5",
@@ -44,8 +43,11 @@
     "@types/ms": "^0.7.31",
     "@types/node": "^14.0.1",
     "@types/verror": "^1.10.6",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
     "bunyan": "^1.8.15",
     "dataloader": "^2.0.0",
+    "eslint": "^8.26.0",
     "express": "^4.17.1",
     "nestjs-bunyan": "^3.0.0",
     "typeorm": "^0.2.32",
