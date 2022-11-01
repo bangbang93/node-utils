@@ -7,9 +7,11 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
+    "@bangbang93/eslint-config-recommended": "^0.0.2",
     "@sindresorhus/is": "^4.0.0",
     "bluebird": "^3.7.2",
     "escape-string-regexp": "^4.0.0",
+    "eslint": "^8.26.0",
     "json-stringify-safe": "^5.0.1",
     "lodash": "^4.17.19",
     "ms": "^2.1.2",
@@ -18,7 +20,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "lint": "eslint --ext .js,.ts ."
   },
   "files": [
     "**/*.js",

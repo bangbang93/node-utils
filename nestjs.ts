@@ -1,4 +1,4 @@
-import {applyDecorators, FactoryProvider, Param, ParseIntPipe, Type, Inject, forwardRef} from '@nestjs/common'
+import {applyDecorators, FactoryProvider, forwardRef, Inject, Param, ParseIntPipe, Type} from '@nestjs/common'
 import {ModuleMetadata} from '@nestjs/common/interfaces'
 import {NestFactory} from '@nestjs/core'
 import {
@@ -27,7 +27,7 @@ interface IGenerateSwaggerOptions {
 }
 
 export async function generateSwagger(appModule, options: IGenerateSwaggerOptions = {}) {
-  const app = await NestFactory.create(appModule);
+  const app = await NestFactory.create(appModule)
 
   const builder = new DocumentBuilder()
     .setTitle(options?.title ?? 'app')
@@ -41,11 +41,11 @@ export async function generateSwagger(appModule, options: IGenerateSwaggerOption
       builder.addServer(server.url, server.description, server.variables)
     }
   }
-  const document = SwaggerModule.createDocument(app, builder.build());
-  const outputPath = options.outputPath ?? path.resolve(process.cwd(), 'swagger.json');
-  writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8'});
+  const document = SwaggerModule.createDocument(app, builder.build())
+  const outputPath = options.outputPath ?? path.resolve(process.cwd(), 'swagger.json')
+  writeFileSync(outputPath, JSON.stringify(document), {encoding: 'utf8'})
 
-  await app.close();
+  await app.close()
 }
 
 export class PagedDto {
@@ -92,7 +92,7 @@ export function PagedResDto<T extends Constructor>(constructor: T): Constructor<
   return PagedRes
 }
 
-export function ApiFile (fileName: string = 'file'): MethodDecorator {
+export function ApiFile(fileName: string = 'file'): MethodDecorator {
   return applyDecorators(
     ApiConsumes('multipart/form-data'),
     ApiImplicitBody({
@@ -103,7 +103,7 @@ export function ApiFile (fileName: string = 'file'): MethodDecorator {
           schema: {
             type: 'file',
           },
-        }
+        },
       },
     })
   )

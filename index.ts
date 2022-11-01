@@ -1,7 +1,7 @@
 import is from '@sindresorhus/is'
 import ms from 'ms'
 import {deprecate} from 'util'
-import { mapValues } from 'lodash'
+import {mapValues} from 'lodash'
 
 export function second(str: string): number {
   return ~~(ms(str) / 1000)
@@ -40,7 +40,7 @@ export function toBoolean(value: string | number | boolean): boolean {
   return [true, 'true', '1', 'yes', 1].includes(value)
 }
 
-export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T;
+export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
 
 export function trimDeep<T extends object>(obj: T): T {
   return mapValues(obj, (v) => {

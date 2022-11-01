@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
   @InjectLogger() private readonly logger!: Logger
   private readonly env: string | undefined
   constructor(
-    @Inject(ConfigService) configServiceOrEnv?: ConfigService | string
+  @Inject(ConfigService) configServiceOrEnv?: ConfigService | string
   ) {
     if (configServiceOrEnv) {
       if (typeof configServiceOrEnv === 'string') {

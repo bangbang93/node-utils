@@ -37,7 +37,7 @@ export class GrpcInterceptor implements NestInterceptor {
             this.logger.trace({start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, res, handler})
             this.logger.info({handler, duration, reqNode})
           },
-          error: noop
+          error: noop,
         })
     } else {
       res$.subscribe({
@@ -46,7 +46,7 @@ export class GrpcInterceptor implements NestInterceptor {
           const duration = end.valueOf() - start.valueOf()
           this.logger.info({handler, duration, reqNode})
         },
-        error: noop
+        error: noop,
       })
     }
     return res$

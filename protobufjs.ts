@@ -40,14 +40,14 @@ export function applyWrappers(w = wrappers) {
 }
 
 
-declare module "protobufjs" {
+declare module 'protobufjs' {
   interface Long {
     toJSON(): number | string
     toNumber(): number
   }
 }
 
-declare module "long" {
+declare module 'long' {
   interface Long {
     toJSON(): number | string
   }

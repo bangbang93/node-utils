@@ -6,5 +6,6 @@ export function fromAsyncIter<T>(iter: AsyncIterable<T>): Observable<T> {
 }
 
 export declare type PromiseToObservable<T> = {
-  [TKey in keyof T]: T[TKey] extends (...args: infer TArgs) => PromiseLike<infer TResult> ? (...args: TArgs) => Observable<TResult> : T[TKey];
-};
+  [TKey in keyof T]: T[TKey] extends (...args: infer TArgs) => PromiseLike<infer TResult>
+    ? (...args: TArgs) => Observable<TResult> : T[TKey];
+}

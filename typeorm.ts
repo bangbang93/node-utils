@@ -14,7 +14,7 @@ export async function withTransaction<T>(
   qr?: QueryRunner,
   mode?: ReplicationMode,
 ): Promise<T> {
-  if (!!qr) {
+  if (qr) {
     return fn(qr)
   }
   qr = connection.createQueryRunner(mode)

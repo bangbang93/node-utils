@@ -1,0 +1,4 @@
+extends:
+  - '@bangbang93/recommended'
+parser: '@typescript-eslint/parser'
+

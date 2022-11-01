@@ -36,7 +36,7 @@ export function arraySort<T extends any[] = unknown[]>(arr: T, orderKey: ISortKe
             case 'number':
               return ((valueA as number) - (valueB as number)) * (order === '+' ? 1 : -1)
             case 'boolean':
-              return ((valueA as boolean ? 1 : 0) - (valueB as boolean ? 1: 0)) * (order === '+' ? 1 : -1)
+              return ((valueA as boolean ? 1 : 0) - (valueB as boolean ? 1 : 0)) * (order === '+' ? 1 : -1)
             case 'date':
               return ((valueA as Date).getTime() - (valueB as Date).getTime()) * (order === '+' ? 1 : -1)
             default:

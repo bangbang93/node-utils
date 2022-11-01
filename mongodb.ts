@@ -3,21 +3,21 @@ import Bluebird from 'bluebird'
 import escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, Types} from 'mongoose'
-import {ObjectId, RichModelType, DocumentType} from 'mongoose-typescript'
+import {DocumentType, ObjectId, RichModelType} from 'mongoose-typescript'
 import {Constructor, Paged} from './index'
 
 export type IdType = string | ObjectId
-type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T, m: string}
+type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
 interface IBuildQueryArguments<T extends object> {
-  equalFields?: BuildQueryField<T>[],
-  matchFields?: BuildQueryField<T>[],
-  idFields?: BuildQueryField<T>[],
-  betweenFields?: BuildQueryField<T>[],
-  inFields?: BuildQueryField<T>[],
+  equalFields?: BuildQueryField<T>[]
+  matchFields?: BuildQueryField<T>[]
+  idFields?: BuildQueryField<T>[]
+  betweenFields?: BuildQueryField<T>[]
+  inFields?: BuildQueryField<T>[]
   query?: object
 }
 
-export function makeMongoRegexp(str: string, options = 'i'): {$regex: string, $options: string} {
+export function makeMongoRegexp(str: string, options = 'i'): {$regex: string; $options: string} {
   if (isNil(str)) return str
   return {
     $regex: escapeStringRegexp(str), $options: options,
@@ -115,7 +115,7 @@ export async function withSession<T>(
   session?: ClientSession | null | false,
 ): Promise<T> {
   if (session === false) return fn(undefined)
-  if (!!session) {
+  if (session) {
     return fn(session)
   }
   session = await connection.startSession()

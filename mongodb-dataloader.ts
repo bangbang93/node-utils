@@ -41,6 +41,6 @@ export function getBaseIdLoader<T, TId extends IdType = IdType>(model: Model<T>,
       } else {
         return e.toString()
       }
-    }
+    },
   })
 }
