@@ -87,7 +87,7 @@ export function buildQuery<T extends object>(search: T, args: IBuildQueryArgumen
   }
   return query
 
-  function getFields(field) {
+  function getFields(field): {s: string; m: string} {
     let s: string
     let m: string
     if (typeof field === 'string') {
@@ -134,7 +134,10 @@ export async function saveDocs(docs: Document[], connection: Connection, session
   }, connection, session)
 }
 
-export async function findAndCount<TModel extends RichModelType<Constructor<TDocument>>, TDocument = any>(model: TModel, query: object, skip: number, limit: number,
+export async function findAndCount<
+  TModel extends RichModelType<Constructor<TDocument>>,
+  TDocument = any
+>(model: TModel, query: object, skip: number, limit: number,
   queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<DocumentType<InstanceType<TModel>>>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {

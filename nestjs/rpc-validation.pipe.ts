@@ -47,12 +47,12 @@ function flattenValidationErrors(
 function mapChildrenToValidationErrors(
   error: ValidationError,
 ): ValidationError[] {
-  if (!(error.children && error.children.length)) {
+  if (!error.children?.length) {
     return [error]
   }
   const validationErrors: ValidationError[] = []
   for (const item of error.children) {
-    if (item.children && item.children.length) {
+    if (item.children?.length) {
       validationErrors.push(...mapChildrenToValidationErrors(item))
     }
     validationErrors.push(prependConstraintsWithParentProp(error, item))

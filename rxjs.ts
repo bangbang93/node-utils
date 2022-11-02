@@ -1,4 +1,4 @@
-import {from, Observable, of} from 'rxjs'
+import {from, Observable} from 'rxjs'
 
 /** @deprecated just use from */
 export function fromAsyncIter<T>(iter: AsyncIterable<T>): Observable<T> {

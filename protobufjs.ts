@@ -1,8 +1,8 @@
 import {common, Message, util, wrappers} from 'protobufjs'
 import ITimestamp = common.ITimestamp
 
-export function applyWrappers(w = wrappers) {
-  wrappers['.google.protobuf.Timestamp'] = {
+export function applyWrappers(w = wrappers): void {
+  w['.google.protobuf.Timestamp'] = {
     fromObject(date: unknown) {
       if (typeof date === 'string') {
         date = new Date(date)
@@ -20,8 +20,8 @@ export function applyWrappers(w = wrappers) {
       return new Date(seconds * 1000 + (message.nanos ?? 0))
     },
   }
-  const _toObject = wrappers['.google.protobuf.Any'].toObject
-  wrappers['.google.protobuf.Any'].toObject = function toObject(message, options) {
+  const _toObject = w['.google.protobuf.Any'].toObject
+  w['.google.protobuf.Any'].toObject = function toObject(message, options) {
     const msg = _toObject?.call(this, message, options)
     if (msg) {
       delete msg['@type']

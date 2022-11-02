@@ -11,7 +11,7 @@ import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
 
-export const ApiSummary = (summary: string) => ApiOperation({summary})
+export const ApiSummary = (summary: string): MethodDecorator => ApiOperation({summary})
 
 interface IGenerateSwaggerOptions {
   title?: string
@@ -26,7 +26,7 @@ interface IGenerateSwaggerOptions {
   }[]
 }
 
-export async function generateSwagger(appModule, options: IGenerateSwaggerOptions = {}) {
+export async function generateSwagger(appModule, options: IGenerateSwaggerOptions = {}): Promise<void> {
   const app = await NestFactory.create(appModule)
 
   const builder = new DocumentBuilder()
@@ -52,7 +52,7 @@ export class PagedDto {
   @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) page: number = 1
   @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(500) limit: number = 10
 
-  get skip() {
+  get skip(): number {
     return (this.page - 1) * this.limit
   }
 
