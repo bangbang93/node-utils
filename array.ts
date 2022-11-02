@@ -3,12 +3,12 @@ import {mapValues} from 'lodash'
 
 type Order = '+' | '-'
 type Type = 'string' | 'number' | 'boolean' | 'date'
-type OrderBy = `${Order}${Type}` | ((a: unknown, b: unknown) => number)
-interface ISortKey {
-  [key: string]: OrderBy
+type OrderBy<T> = `${Order}${Type}` | ((a: T, b: T) => number)
+interface ISortKey<T> {
+  [key: string]: OrderBy<T>
 }
 
-export function arraySort<T extends any[] = unknown[]>(arr: T, orderKey: ISortKey): T {
+export function arraySort<T = unknown>(arr: T[], orderKey: ISortKey<T>): T[] {
   const keys = Object.keys(orderKey)
   const orders = mapValues(orderKey, (v) => {
     if (typeof v === 'string') {
