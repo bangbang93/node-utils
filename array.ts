@@ -1,5 +1,5 @@
 import is from '@sindresorhus/is'
-import {mapValues} from 'lodash'
+import {get, mapValues} from 'lodash'
 
 type Order = '+' | '-'
 type Type = 'string' | 'number' | 'boolean' | 'date'
@@ -27,8 +27,8 @@ export function arraySort<T = unknown>(arr: T[], orderKey: ISortKey<T>): T[] {
         return orderBy(a, b)
       } else {
         const {order, type} = orderBy
-        const valueA = a[key]
-        const valueB = b[key]
+        const valueA = get(a, key)
+        const valueB = get(b, key)
         if (valueA !== valueB) {
           switch (type) {
             case 'string':
