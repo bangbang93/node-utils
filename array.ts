@@ -9,6 +9,10 @@ interface ISortKey<T> {
 }
 
 export function arraySort<T = unknown>(arr: T[], orderKey: ISortKey<T>): T[] {
+  return arr.sort(generateSortFunction(orderKey))
+}
+
+export function generateSortFunction<T = unknown>(orderKey: ISortKey<T>): (a: T, b: T) => number {
   const keys = Object.keys(orderKey)
   const orders = mapValues(orderKey, (v) => {
     if (typeof v === 'string') {
@@ -20,7 +24,7 @@ export function arraySort<T = unknown>(arr: T[], orderKey: ISortKey<T>): T[] {
       return v
     }
   })
-  return arr.sort((a, b) => {
+  return (a, b) => {
     for (const key of keys) {
       const orderBy = orders[key]
       if (is.function_(orderBy)) {
@@ -46,5 +50,5 @@ export function arraySort<T = unknown>(arr: T[], orderKey: ISortKey<T>): T[] {
       }
     }
     return 0
-  })
+  }
 }
