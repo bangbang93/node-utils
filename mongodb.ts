@@ -5,6 +5,7 @@ import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, Types} from 'mongoose'
 import {DocumentType, ObjectId, RichModelType} from 'mongoose-typescript'
 import {Constructor, Paged} from './index'
+import {RequireExactlyOne} from "type-fest";
 
 export type IdType = string | ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
@@ -35,6 +36,30 @@ export function mongoBetween<T>(data: T[]): { $lte?: T; $gte?: T } {
     $lte: max(data),
     $gte: min(data),
   }
+}
+
+type NumberOperator = RequireExactlyOne<{
+  $eq: number
+  $gt: number
+  $gte: number
+  $lt: number
+  $lte: number
+  $ne: number
+}>
+export function parseNumberQuery(query: string): NumberOperator {
+  const regex = /^(?<op>[<>]=?)(?<num>\d+.?\d*?)$/
+  const opMap = {
+    '=': '$eq',
+    '>': '$gt',
+    '>=': '$gte',
+    '<': '$lt',
+    '<=': '$lte',
+    '!=': '$ne',
+  }
+  const match = query.match(regex)
+  if (!match) throw new TypeError(`Invalid number query: ${query}`)
+  const {op, num} = match.groups as {op: string, num: string}
+  return {[opMap[op]]: Number(num)} as NumberOperator
 }
 
 export function buildQuery<T extends object>(search: T, args: IBuildQueryArguments<T>): Record<string, unknown> {
