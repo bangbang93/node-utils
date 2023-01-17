@@ -47,14 +47,16 @@ type NumberOperator = RequireExactlyOne<{
   $ne: number
 }>
 export function parseNumberQuery(query: string): NumberOperator {
-  const regex = /^(?<op>[<>!]=?)(?<num>\d+.?\d*?)$/
+  const regex = /^(?<op>[<>=!]=?)(?<num>\d+.?\d*?)$/
   const opMap = {
     '=': '$eq',
+    '==': '$eq',
     '>': '$gt',
     '>=': '$gte',
     '<': '$lt',
     '<=': '$lte',
     '!=': '$ne',
+    '!': '$ne',
   }
   const match = query.match(regex)
   if (!match) throw new TypeError(`Invalid number query: ${query}`)
