@@ -53,9 +53,13 @@ export function setDefaultPageLimit(limit: number): void {
   DefaultPageLimit = limit
 }
 
+export function getDefaultPageLimit(): number {
+  return DefaultPageLimit
+}
+
 export class PagedDto {
   @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) page: number = 1
-  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(500) limit: number = DefaultPageLimit
+  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(500) limit: number = getDefaultPageLimit()
 
   get skip(): number {
     return (this.page - 1) * this.limit
