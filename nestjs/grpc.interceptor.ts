@@ -23,7 +23,6 @@ export class GrpcInterceptor implements NestInterceptor {
     const reqId = first(reqMetadata.get('x-request-id'))
     const reqNode = first(reqMetadata.get('x-req-node'))
     reqId && metadata.set('x-request-id', reqId)
-    call.sendMetadata(metadata)
     const handler = `${context.getClass().name}.${context.getHandler().name}`
     const res$ = next.handle()
       .pipe(
@@ -34,6 +33,7 @@ export class GrpcInterceptor implements NestInterceptor {
     )
       .subscribe({
         next: (result) => {
+          call.sendMetadata(metadata)
           const end = new Date()
           const duration = end.valueOf() - start.valueOf()
           if (this.logger.trace()) {
@@ -45,6 +45,7 @@ export class GrpcInterceptor implements NestInterceptor {
           }
         },
         error: (err) => {
+          call.sendMetadata(metadata)
           const end = new Date()
           const duration = end.valueOf() - start.valueOf()
           if (this.logger.trace()) {
