@@ -12,7 +12,7 @@ import {inspect} from 'util'
 export class GrpcInterceptor implements NestInterceptor {
   @InjectLogger() private readonly logger!: Logger
 
-  public intercept(context: ExecutionContext, next: CallHandler): Observable<any> | Promise<Observable<any>> {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> | Promise<Observable<unknown>> {
     if (context.getType() !== 'rpc') {
       return next.handle()
     }
