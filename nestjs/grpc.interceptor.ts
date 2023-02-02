@@ -4,8 +4,9 @@ import * as Logger from 'bunyan'
 import {first} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import {hostname} from 'os'
-import {noop, Observable} from 'rxjs'
+import {Observable} from 'rxjs'
 import {share, toArray} from 'rxjs/operators'
+import {inspect} from 'util'
 
 @Injectable()
 export class GrpcInterceptor implements NestInterceptor {
@@ -25,30 +26,35 @@ export class GrpcInterceptor implements NestInterceptor {
     call.sendMetadata(metadata)
     const handler = `${context.getClass().name}.${context.getHandler().name}`
     const res$ = next.handle()
-    if (this.logger.trace()) {
-      const clone$ = res$.pipe(share())
-      clone$.pipe(
-        toArray(),
+      .pipe(
+        share(),
       )
-        .subscribe({
-          next: (res) => {
-            const end = new Date()
-            const duration = end.valueOf() - start.valueOf()
-            this.logger.trace({start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, res, handler})
-            this.logger.info({handler, duration, reqNode})
-          },
-          error: noop,
-        })
-    } else {
-      res$.subscribe({
-        complete: () => {
+    res$.pipe(
+      toArray(),
+    )
+      .subscribe({
+        next: (result) => {
           const end = new Date()
           const duration = end.valueOf() - start.valueOf()
-          this.logger.info({handler, duration, reqNode})
+          if (this.logger.trace()) {
+            const r = inspect(result, {depth: Infinity})
+            this.logger.trace({start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, result: r,
+              handler, reqNode})
+          } else {
+            this.logger.info({handler, duration, reqNode})
+          }
         },
-        error: noop,
+        error: (err) => {
+          const end = new Date()
+          const duration = end.valueOf() - start.valueOf()
+          if (this.logger.trace()) {
+            this.logger.trace(err, {start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, handler,
+              reqNode})
+          } else {
+            this.logger.info(err, {handler, duration, reqNode})
+          }
+        },
       })
-    }
     return res$
   }
 }
