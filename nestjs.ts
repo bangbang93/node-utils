@@ -48,6 +48,7 @@ export async function generateSwagger(appModule, options: IGenerateSwaggerOption
 }
 
 let DefaultPageLimit = 10
+const MAX_PAGE = 500
 
 export function setDefaultPageLimit(limit: number): void {
   DefaultPageLimit = limit
@@ -59,7 +60,7 @@ export function getDefaultPageLimit(): number {
 
 export class PagedDto {
   @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) page: number = 1
-  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(500) limit: number = getDefaultPageLimit()
+  @ApiPropertyOptional() @IsOptional() @IsInt() @Min(1) @Max(MAX_PAGE) limit: number = getDefaultPageLimit()
 
   get skip(): number {
     return (this.page - 1) * this.limit
