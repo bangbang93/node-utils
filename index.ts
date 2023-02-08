@@ -40,8 +40,6 @@ export function toBoolean(value: string | number | boolean): boolean {
   return [true, 'true', '1', 'yes', 1].includes(value)
 }
 
-export type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
-
 export function trimDeep<T extends object>(obj: T): T {
   return mapValues(obj, (v) => {
     if (is.string(v)) {
