@@ -1,4 +1,5 @@
 import {common, Message, util, wrappers} from 'protobufjs'
+import {Paged} from './index'
 import ITimestamp = common.ITimestamp
 
 export function applyWrappers(w = wrappers): void {
@@ -36,6 +37,13 @@ export function applyWrappers(w = wrappers): void {
     } else {
       return this.toString()
     }
+  }
+}
+
+export function unwrapPagedDto<T>(data: Partial<Paged<T>>): Paged<T> {
+  return {
+    count: data.count ?? 0,
+    data: data.data ?? [],
   }
 }
 
