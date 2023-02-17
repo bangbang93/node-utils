@@ -35,7 +35,7 @@
     "@nestjs/core": "^9.0.5",
     "@nestjs/microservices": "^9.0.5",
     "@nestjs/mongoose": "^9.2.0",
-    "@nestjs/swagger": "^6.0.4",
+    "@nestjs/swagger": "^6.2.1",
     "@tsconfig/node16": "^1.0.3",
     "@types/bluebird": "^3.5.32",
     "@types/bunyan": "^1.8.6",
