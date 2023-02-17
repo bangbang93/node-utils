@@ -1,6 +1,6 @@
 {
   "name": "@bangbang93/utils",
-  "version": "5.5.0",
+  "version": "6.0.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
@@ -72,7 +72,7 @@
   },
   "peerDependenciesMeta": {
     "@bangbang93/service-errors": {
-        "optional": true
+      "optional": true
     },
     "@grpc/grpc-js": {
       "optional": true
