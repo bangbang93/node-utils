@@ -79,6 +79,14 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
   }
 
   private getResponse(err: Error): string {
+    if (err instanceof ServiceError) {
+      const data = err.toJSON()
+      if (this.env?.toLowerCase() !== 'production') {
+        return stringify(data)
+      } else {
+        return stringify(omit(data, 'stack'))
+      }
+    }
     if (err instanceof VError) {
       const info = VError.info(err)
       if (this.env?.toLowerCase() !== 'production') {
