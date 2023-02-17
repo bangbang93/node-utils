@@ -6,7 +6,7 @@ import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import {VError} from 'verror'
-import {createError, ServiceError} from '@bangbang93/service-errors'
+import {ServiceError, ServiceErrors} from '@bangbang93/service-errors'
 import Logger = require('bunyan')
 
 @Catch()
@@ -37,11 +37,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
     if (res.headersSent) return
 
     if (!(err instanceof ServiceError)) {
-      const childError = createError.COMMON_UNKNOWN(err.message, {
-        httpCode: this.getHttpCode(err),
-        causedBy: err,
-        name: err.name,
-      })
+      const childError = ServiceErrors.fromError(err)
       return this.catch(childError, host)
     }
 
