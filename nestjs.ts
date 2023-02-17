@@ -2,7 +2,7 @@ import {applyDecorators, FactoryProvider, forwardRef, Inject, Param, ParseIntPip
 import {ModuleMetadata} from '@nestjs/common/interfaces'
 import {NestFactory} from '@nestjs/core'
 import {
-  ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, DocumentBuilder, SwaggerModule,
+  ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, ApiResponse, DocumentBuilder, SwaggerModule,
 } from '@nestjs/swagger'
 import {ServerVariableObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
 import {IsInt, IsMongoId, IsOptional, Matches, Max, Min} from 'class-validator'
@@ -129,4 +129,41 @@ export function IntParam(name: string): ParameterDecorator {
 
 export function InjectRef<T>(fn: () => Type<T>): ReturnType<typeof Inject> {
   return Inject(forwardRef(fn))
+}
+
+type ServiceErrorDefinition = Record<string, readonly [message: string, httpCode?: number]>
+
+/**
+ * Api错误响应装饰器
+ * @param errors 错误定义
+ * @param code 错误码
+ * @param message 错误信息
+ * @param description 描述
+ * @example @ApiError(ServiceErrors, 'COMMON_NO_SUCH_OBJECT', '找不到对象')
+ */
+export function ApiError<T extends ServiceErrorDefinition>(
+  errors: T,
+  code: keyof T,
+  message?: string,
+  description = message,
+): MethodDecorator & ClassDecorator {
+  const error = errors[code]
+  return applyDecorators(
+    ApiResponse({
+      status: error[1] as number,
+      description,
+      schema: {
+        properties: {
+          code: {
+            type: 'string',
+            example: code,
+          },
+          message: {
+            type: 'string',
+            example: message ?? error[0],
+          },
+        },
+      },
+    })
+  )
 }

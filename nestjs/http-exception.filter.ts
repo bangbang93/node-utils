@@ -1,4 +1,4 @@
-import {ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject, OnModuleInit} from '@nestjs/common'
+import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, OnModuleInit} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
 import {Request, Response} from 'express'
@@ -6,6 +6,7 @@ import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import {VError} from 'verror'
+import {createError, ServiceError} from '@bangbang93/service-errors'
 import Logger = require('bunyan')
 
 @Catch()
@@ -33,8 +34,20 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
     const req = ctx.getRequest<Request>()
     const res = ctx.getResponse<Response>()
 
-    const status = err['status'] ?? 500
-    if (status === 500) {
+    if (res.headersSent) return
+
+    if (!(err instanceof ServiceError)) {
+      const childError = createError.COMMON_UNKNOWN(err.message, {
+        httpCode: this.getHttpCode(err),
+        causedBy: err,
+        name: err.name,
+      })
+      return this.catch(childError, host)
+    }
+
+    const resp = this.getResponse(err)
+    const status = this.getHttpCode(err)
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error({
         err,
         reqId: req['id'],
@@ -58,25 +71,6 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
           body: req.body,
         },
       })
-    }
-
-    if (res.headersSent) return
-
-    let resp: string
-    if (err instanceof HttpException) {
-      const r = err.getResponse()
-      if (typeof r === 'string') {
-        resp = r
-      } else if (r instanceof Error) {
-        resp = this.getResponse(r)
-      } else {
-        resp = stringify({
-          ...pick(err, 'message', 'name', 'stack'),
-          ...r,
-        })
-      }
-    } else {
-      resp = this.getResponse(err)
     }
 
     res.status(status)
@@ -110,6 +104,16 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
           ...omit(err, 'stack'),
         })
       }
+    }
+  }
+
+  private getHttpCode(err: Error): number {
+    if (err instanceof ServiceError) {
+      return err.httpCode ?? HttpStatus.INTERNAL_SERVER_ERROR
+    } else if (err instanceof HttpException) {
+      return err.getStatus()
+    } else {
+      return err['httpCode'] ?? err['status'] ?? err['statusCode'] ?? HttpStatus.INTERNAL_SERVER_ERROR
     }
   }
 }
