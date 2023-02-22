@@ -1,3 +1,4 @@
+import {createError, ServiceError} from '@bangbang93/service-errors'
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, OnModuleInit} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
@@ -6,7 +7,6 @@ import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
 import {InjectLogger} from 'nestjs-bunyan'
 import {VError} from 'verror'
-import {ServiceError} from '@bangbang93/service-errors'
 import Logger = require('bunyan')
 
 @Catch()
@@ -35,6 +35,16 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
     const res = ctx.getResponse<Response>()
 
     if (res.headersSent) return
+
+    if (err instanceof HttpException) {
+      const data = err.getResponse()
+      const childError = createError.COMMON_UNKNOWN(err.message, {
+        httpCode: err.getStatus(),
+        causedBy: err,
+        ...typeof data === 'string' ? {} : data,
+      })
+      return this.catch(childError, host)
+    }
 
     if (!(err instanceof ServiceError)) {
       const childError = ServiceError.fromError(err)
