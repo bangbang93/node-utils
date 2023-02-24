@@ -36,7 +36,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
 
     if (err instanceof HttpException) {
       const data = err.getResponse()
-      const childError = new ServiceError('COMMON_UNKNOWN', err.message, {
+      const childError = new ServiceError('COMMON_UNKNOWN', '未知错误', {
         httpCode: err.getStatus(),
         causedBy: err,
         ...typeof data === 'string' ? {} : data,
