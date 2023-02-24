@@ -34,11 +34,9 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
     const req = ctx.getRequest<Request>()
     const res = ctx.getResponse<Response>()
 
-    if (res.headersSent) return
-
     if (err instanceof HttpException) {
       const data = err.getResponse()
-      const childError = createError.COMMON_UNKNOWN(err.message, {
+      const childError = new ServiceError('COMMON_UNKNOWN', err.message, {
         httpCode: err.getStatus(),
         causedBy: err,
         ...typeof data === 'string' ? {} : data,
@@ -78,6 +76,8 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
         },
       })
     }
+
+    if (res.headersSent) return
 
     res.status(status)
       .type('json')
