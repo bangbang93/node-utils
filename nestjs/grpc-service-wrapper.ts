@@ -1,4 +1,4 @@
-import {createError, ServiceError} from '@bangbang93/service-errors'
+import {createError, ServiceError, ServiceErrors} from '@bangbang93/service-errors'
 import {Metadata} from '@grpc/grpc-js'
 import {RpcException} from '@nestjs/microservices'
 import is from '@sindresorhus/is'
@@ -14,13 +14,13 @@ export function grpcServiceWrapper<T extends object>(rawService: T): PromiseToOb
       if (!(propKey in rawService)) return undefined
       const prop: unknown = rawService[propKey]
       if (is.function_(prop)) {
-        return (data: unknown, metadata?: Metadata): Observable<unknown> => {
+        return (data: unknown, metadata?: Metadata, ...rest: unknown[]): Observable<unknown> => {
           metadata ??= new Metadata()
           metadata.set('x-req-node', hostname())
-          const res$: Observable<unknown> = prop.call(rawService, data, metadata)
+          const res$: Observable<unknown> = prop.call(rawService, data, metadata, ...rest)
           return res$.pipe(
             catchError((err: RpcException) => {
-              let parsedError: Error = err
+              let parsedError: ServiceError
               if (err['code'] === 2 && err['details']) {
                 try {
                   const json = JSON.parse(err['details'])
@@ -43,14 +43,18 @@ export function grpcServiceWrapper<T extends object>(rawService: T): PromiseToOb
                     throw createError.COMMON_RPC_ERROR(detail.message, {causedBy: detail})
                   }
                 }
+              } else {
+                parsedError = createError.COMMON_RPC_ERROR(err.message, {causedBy: err})
               }
 
-              throw createError.COMMON_RPC_ERROR(parsedError.message, {
+              ServiceError.appendStacktrace(parsedError)
+              throw new ServiceError(parsedError.code, '', {
+                causedBy: parsedError,
+                httpCode: parsedError.httpCode,
                 service: rawService.constructor.name,
                 method: propKey,
                 data,
                 metadata,
-                causedBy: parsedError,
               })
             })
           )
