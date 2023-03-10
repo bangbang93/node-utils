@@ -2,20 +2,20 @@ import is from '@sindresorhus/is'
 import Bluebird from 'bluebird'
 import escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Document, Types} from 'mongoose'
+import {ClientSession, Connection, Document, FilterQuery, Types} from 'mongoose'
 import {DocumentType, ObjectId, RichModelType} from 'mongoose-typescript'
 import {Constructor, Paged} from './index'
-import {RequireExactlyOne} from "type-fest";
+import {RequireExactlyOne} from 'type-fest'
 
 export type IdType = string | ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
-interface IBuildQueryArguments<T extends object> {
+interface IBuildQueryArguments<T extends object, M = object> {
   equalFields?: BuildQueryField<T>[]
   matchFields?: BuildQueryField<T>[]
   idFields?: BuildQueryField<T>[]
   betweenFields?: BuildQueryField<T>[]
   inFields?: BuildQueryField<T>[]
-  query?: object
+  query?: FilterQuery<M>
 }
 
 export function makeMongoRegexp(str: string, options = 'i'): {$regex: string; $options: string} {
@@ -60,11 +60,11 @@ export function parseNumberQuery(query: string): NumberOperator {
   }
   const match = query.match(regex)
   if (!match) throw new TypeError(`Invalid number query: ${query}`)
-  const {op, num} = match.groups as {op: string, num: string}
+  const {op, num} = match.groups as {op: string; num: string}
   return {[opMap[op]]: Number(num)} as NumberOperator
 }
 
-export function buildQuery<T extends object>(search: T, args: IBuildQueryArguments<T>): Record<string, unknown> {
+export function buildQuery<T extends object, M = object>(search: T, args: IBuildQueryArguments<T, M>): FilterQuery<M> {
   if (!search) return {}
   if (!is.object(search)) throw new TypeError('search must be an object')
   const query: Record<string, unknown> = (args.query ?? {}) as Record<string, unknown>
