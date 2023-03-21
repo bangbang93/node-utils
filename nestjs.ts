@@ -72,8 +72,8 @@ export class PagedDto {
 }
 
 export class SortablePagedDto extends PagedDto {
-  /** 例： +createdAt,"+-"代表正序倒序 */
-  @ApiPropertyOptional() @IsOptional() @Matches(/^[+-].+$/) sort?: string
+  @ApiPropertyOptional({description: '例： +createdAt,"+-"代表正序倒序'}) @IsOptional() @Matches(/^[+-].+$/)
+    sort?: string
 }
 
 export class IdDto {
