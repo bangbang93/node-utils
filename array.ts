@@ -1,5 +1,5 @@
 import is from '@sindresorhus/is'
-import {get, mapValues} from 'lodash'
+import {get, isNil, mapValues} from 'lodash'
 
 type Order = '+' | '-'
 type Type = 'string' | 'number' | 'boolean' | 'date'
@@ -31,8 +31,11 @@ export function generateSortFunction<T = unknown>(orderKey: ISortKey<T>): (a: T,
         return orderBy(a, b)
       } else {
         const {order, type} = orderBy
-        const valueA = get(a, key)
-        const valueB = get(b, key)
+        const valueA: unknown = get(a, key)
+        const valueB: unknown = get(b, key)
+        if (isNil(a) || isNil(b)) {
+          return 0
+        }
         if (valueA !== valueB) {
           switch (type) {
             case 'string':
