@@ -12,3 +12,5 @@ node_modules
 *.js
 *.map
 *.d.ts
+
+!jest.config.js
