@@ -4,7 +4,7 @@ import {get, isNil, mapValues} from 'lodash'
 type Order = '+' | '-'
 type Type = 'string' | 'number' | 'boolean' | 'date'
 type OrderBy<T> = `${Order}${Type}` | ((a: T, b: T) => number)
-interface ISortKey<T> {
+interface ISortKey<T = unknown> {
   [key: string]: OrderBy<T>
 }
 
