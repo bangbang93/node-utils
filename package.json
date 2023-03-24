@@ -20,7 +20,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run build",
-    "lint": "eslint --ext .js,.ts ."
+    "lint": "eslint --ext .js,.ts .",
+    "test": "jest --coverage"
   },
   "files": [
     "**/*.js",
