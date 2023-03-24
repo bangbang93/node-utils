@@ -13,7 +13,7 @@
  */
 
 
-import {arraySort} from './array'
+import {arraySort, generateSortFunction} from './array'
 
 describe('arraySort_function', () => {
   test('test_nonEmptyArraySort: 非空数组排序', () => {
@@ -58,5 +58,69 @@ describe('arraySort_function', () => {
     const orderKey = {age: '+number'} as const
     const expected = [{name: 'Charlie', age: '20'}, {name: 'Alice', age: '25'}, {name: 'Bob', age: '30'}]
     expect(arraySort(arr, orderKey)).toEqual(expected)
+  })
+})
+
+describe('generateSortFunction_function', () => {
+  test('test_validOrderKey', () => {
+    const orderKey = {
+      name: '+string',
+      age: '-number',
+    } as const
+    const sortFunction = generateSortFunction(orderKey)
+    expect(typeof sortFunction)
+      .toBe('function')
+  })
+  test('test_validArray', () => {
+    const arr = [
+      {name: 'John', age: 30},
+      {name: 'Jane', age: 25},
+      {name: 'Bob', age: 40},
+    ]
+    const orderKey = {
+      name: '+string',
+      age: '-number',
+    } as const
+    const sortedArr = arraySort(arr, orderKey)
+    expect(sortedArr)
+      .toEqual([
+        {name: 'Bob', age: 40},
+        {name: 'Jane', age: 25},
+        {name: 'John', age: 30},
+      ])
+  })
+  test('test_sortingFunctionReturnsNumber', () => {
+    const orderKey = {
+      name: '+string',
+      age: '-number',
+    } as const
+    const sortFunction = generateSortFunction(orderKey)
+    const result = sortFunction({name: 'John', age: 30}, {name: 'Jane', age: 25})
+    expect(typeof result)
+      .toBe('number')
+  })
+  test('test_missingKeys', () => {
+    const arr = [
+      {name: 'John', age: 30},
+      {name: 'Jane', age: 25},
+      {name: 'Bob', age: 40},
+    ]
+    const orderKey = {name: '+string', height: '-number'} as const
+    const sortedArr = arraySort(arr, orderKey)
+    expect(sortedArr).toEqual(arr)
+  })
+  test('test_sortingFunctionCorrectlySorts', () => {
+    const arr = [
+      {name: 'John', age: 30},
+      {name: 'Jane', age: 25},
+      {name: 'Bob', age: 40},
+    ]
+    const orderKey = {name: '+string', age: '-number'} as const
+    const sortedArr = arraySort(arr, orderKey)
+    expect(sortedArr).toEqual([
+      {name: 'Bob', age: 40},
+      {name: 'Jane', age: 25},
+      {name: 'John', age: 30},
+    ])
   })
 })
