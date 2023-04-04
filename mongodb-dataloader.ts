@@ -1,5 +1,7 @@
 import is from '@sindresorhus/is'
 import {Model} from 'mongoose'
+import {RichModelType} from 'mongoose-typescript'
+import {Constructor} from './index'
 import {IdType, toObjectId} from './mongodb'
 import DataLoader = require('dataloader')
 
@@ -30,11 +32,15 @@ function equals(a: unknown, b: unknown): boolean {
   return false
 }
 
-export function getBaseIdLoader<T, TId extends IdType = IdType>(
-  model: Model<T>,
+export function getBaseIdLoader<
+  TModel extends RichModelType<Constructor<TDocument>>,
+  TDocument = any,
+  TId extends IdType = IdType,
+>(
+  model: TModel,
   castId: TCastId = toObjectId,
-): DataLoader<TId, T | undefined> {
-  return new DataLoader<TId, T | undefined>(async (ids) => {
+): DataLoader<TId, TDocument | undefined> {
+  return new DataLoader<TId, TDocument | undefined>(async (ids) => {
     const docs = await model.find({_id: {$in: ids.map(castId)}})
     return ids.map((id) => docs.find((doc) => equals(doc._id, id)))
   }, {
