@@ -47,7 +47,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                 if (err['code'] === 2 && err['details']) {
                   try {
                     const json = JSON.parse(err['details'])
-                    if (json.isChipcooError) {
+                    if (json.$isServiceError) {
                       parsedError = plainToInstance(ServiceError, json as object)
                     } else {
                       parsedError = createError.COMMON_RPC_ERROR(json.message, {causedBy: err})
@@ -56,7 +56,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                     let detail = err['details']
                     try {
                       detail = JSON.parse(err['details'])
-                      if (detail.isChipcooError) {
+                      if (detail.$isServiceError) {
                         detail = plainToInstance(ServiceError, detail)
                       }
                     } catch (e) {/* ignore */}
