@@ -67,6 +67,9 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                     }
                   }
                 }
+                if (parsedError instanceof ServiceError) {
+                  throw parsedError
+                }
 
                 throw createError.COMMON_RPC_ERROR(parsedError.message, {
                   service: this.serviceName,
