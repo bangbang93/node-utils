@@ -4,11 +4,10 @@ import escapeStringRegexp from 'escape-string-regexp'
 import {isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, FilterQuery, Types} from 'mongoose'
 import {DocumentType, RichModelType} from 'mongoose-typescript'
-import {ObjectId} from 'mongodb'
-import {Constructor, Paged} from './index'
 import {RequireExactlyOne} from 'type-fest'
+import {Constructor, Paged} from './index'
 
-export type IdType = string | ObjectId
+export type IdType = string | Types.ObjectId
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
 interface IBuildQueryArguments<T extends object, M = object> {
   equalFields?: BuildQueryField<T>[]
@@ -26,7 +25,7 @@ export function makeMongoRegexp(str: string, options = 'i'): {$regex: string; $o
   }
 }
 
-export function toObjectId(id: IdType): ObjectId {
+export function toObjectId(id: IdType): Types.ObjectId {
   if (!id) throw new TypeError('id cannot be empty')
   if (typeof id === 'string') return new Types.ObjectId(id)
   return id
