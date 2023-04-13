@@ -2,6 +2,7 @@ import {createError, ServiceError} from '@bangbang93/service-errors'
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, OnModuleInit} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 import {stdSerializers} from 'bunyan'
+import {plainToInstance} from 'class-transformer'
 import {Request, Response} from 'express'
 import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
@@ -42,6 +43,20 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
         ...typeof data === 'string' ? {} : data,
       })
       return this.catch(childError, host)
+    }
+
+    if (err['code'] === 2 && err['details']) {
+      try {
+        const json = JSON.parse(err['details'])
+        if (json.$isServiceError) {
+          err = plainToInstance(ServiceError, json as object)
+        } else {
+          err = createError.COMMON_RPC_ERROR(json.message, {causedBy: err})
+        }
+      } catch (e) {
+        return this.catch(createError.COMMON_RPC_ERROR(err['details'], {causedBy: err}), host)
+      }
+      return this.catch(err, host)
     }
 
     if (!(err instanceof ServiceError)) {
