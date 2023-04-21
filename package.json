@@ -3,6 +3,7 @@
   "version": "6.6.3",
   "main": "index.js",
   "types": "index.d.ts",
+  "license": "MIT",
   "repository": {
     "url": "https://github.com/bangbang93/node-utils"
   },
