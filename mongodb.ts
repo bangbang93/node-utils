@@ -8,7 +8,10 @@ import {RequireExactlyOne} from 'type-fest'
 import {Constructor, Paged} from './index'
 
 export type IdType = string | Types.ObjectId
+export type NotDocument<T>  = T & {toObject: undefined}
+
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
+
 interface IBuildQueryArguments<T extends object, M = object> {
   equalFields?: BuildQueryField<T>[]
   matchFields?: BuildQueryField<T>[]
