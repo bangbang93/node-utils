@@ -1,7 +1,6 @@
 import is from '@sindresorhus/is'
 import Bluebird from 'bluebird'
-import escapeStringRegexp from 'escape-string-regexp'
-import {isNil, max, min} from 'lodash'
+import {escapeRegExp, isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, FilterQuery, Types} from 'mongoose'
 import {DocumentType, RichModelType} from 'mongoose-typescript'
 import {RequireExactlyOne} from 'type-fest'
@@ -24,7 +23,7 @@ interface IBuildQueryArguments<T extends object, M = object> {
 export function makeMongoRegexp(str: string, options = 'i'): {$regex: string; $options: string} {
   if (isNil(str)) return str
   return {
-    $regex: escapeStringRegexp(str), $options: options,
+    $regex: escapeRegExp(str), $options: options,
   }
 }
 
