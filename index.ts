@@ -49,3 +49,5 @@ export function trimDeep<T extends object>(obj: T): T {
     } return v
   }) as T
 }
+
+export * from './types'
