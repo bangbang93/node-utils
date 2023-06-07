@@ -1,7 +1,9 @@
+import {createError} from '@bangbang93/service-errors'
 import is from '@sindresorhus/is'
+import stringify from 'json-stringify-safe'
+import {mapValues} from 'lodash'
 import ms from 'ms'
 import {deprecate} from 'util'
-import {mapValues} from 'lodash'
 
 export function second(str: string): number {
   return ~~(ms(str) / 1000)
@@ -51,3 +53,15 @@ export function trimDeep<T extends object>(obj: T): T {
 }
 
 export * from './types'
+
+export function caughtError(e: unknown): Error {
+  if (is.error(e)) {
+    return e
+  }
+  if (is.object(e)) {
+    if ('message' in e) {
+      return createError.COMMON_UNKNOWN(e['message'])
+    }
+  }
+  return createError.COMMON_UNKNOWN(stringify(e))
+}
