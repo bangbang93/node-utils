@@ -50,7 +50,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                     if (json.$isServiceError) {
                       parsedError = plainToInstance(ServiceError, json as object)
                     } else {
-                      parsedError = createError.COMMON_RPC_ERROR(json.message, {causedBy: err})
+                      parsedError = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
                     }
                   } catch (e) {
                     let detail = err['details']
@@ -63,7 +63,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                     if (detail instanceof ServiceError) {
                       throw detail
                     } else {
-                      throw createError.COMMON_RPC_ERROR(detail.message, {causedBy: detail})
+                      throw createError.COMMON_UNKNOWN(detail.message, {causedBy: detail})
                     }
                   }
                 }
@@ -71,7 +71,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                   throw parsedError
                 }
 
-                throw createError.COMMON_RPC_ERROR(parsedError.message, {
+                throw createError.COMMON_UNKNOWN(parsedError.message, {
                   service: this.serviceName,
                   method: propKey,
                   data,

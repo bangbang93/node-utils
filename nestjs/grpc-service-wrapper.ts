@@ -27,7 +27,7 @@ export function grpcServiceWrapper<T extends object>(rawService: T): PromiseToOb
                   if (json.$isServiceError) {
                     parsedError = plainToInstance(ServiceError, json as object)
                   } else {
-                    parsedError = createError.COMMON_RPC_ERROR(json.message, {causedBy: err})
+                    parsedError = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
                   }
                 } catch (e) {
                   let detail = err['details']
@@ -40,11 +40,11 @@ export function grpcServiceWrapper<T extends object>(rawService: T): PromiseToOb
                   if (detail instanceof ServiceError) {
                     throw detail
                   } else {
-                    throw createError.COMMON_RPC_ERROR(detail.message, {causedBy: detail})
+                    throw createError.COMMON_UNKNOWN(detail.message, {causedBy: detail})
                   }
                 }
               } else {
-                parsedError = createError.COMMON_RPC_ERROR(err.message, {causedBy: err})
+                parsedError = createError.COMMON_UNKNOWN(err.message, {causedBy: err})
               }
 
               ServiceError.appendStacktrace(parsedError)

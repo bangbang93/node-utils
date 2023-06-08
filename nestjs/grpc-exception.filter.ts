@@ -49,10 +49,10 @@ export class GrpcExceptionFilter implements ExceptionFilter, OnModuleInit {
           if (json.$isServiceError) {
             err = plainToInstance(ServiceError, json as object)
           } else {
-            err = createError.COMMON_RPC_ERROR(json.message, {causedBy: err})
+            err = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
           }
         } catch (e) {
-          return this.catch(createError.COMMON_RPC_ERROR(err['details'], {causedBy: err}), host)
+          return this.catch(createError.COMMON_UNKNOWN(err['details'], {causedBy: err}), host)
         }
         return this.catch(err, host)
       } else {

@@ -17,7 +17,7 @@ export class ClassValidationPipe extends NestValidationPipe {
       },
       exceptionFactory: (errors: ValidationError[]) => {
         const msgs = this.flattenValidationErrors(errors)
-        return createError.COMMON_MISSING_ARGUMENTS(msgs.join())
+        return createError.COMMON_INVALID_PARAMETER(msgs.join())
       },
       ...options,
     })

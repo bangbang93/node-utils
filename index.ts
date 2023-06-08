@@ -1,7 +1,7 @@
 import {createError} from '@bangbang93/service-errors'
 import is from '@sindresorhus/is'
 import stringify from 'json-stringify-safe'
-import {mapValues} from 'lodash'
+import {isNil, mapValues} from 'lodash'
 import ms from 'ms'
 import {deprecate} from 'util'
 
@@ -59,8 +59,8 @@ export function caughtError(e: unknown): Error {
     return e
   }
   if (is.object(e)) {
-    if ('message' in e) {
-      return createError.COMMON_UNKNOWN(e['message'])
+    if ('message' in e && !isNil(e.message)) {
+      return createError.COMMON_UNKNOWN(e['message'] as string)
     }
   }
   return createError.COMMON_UNKNOWN(stringify(e))
