@@ -1,5 +1,5 @@
 import is from '@sindresorhus/is'
-import {Model} from 'mongoose'
+import {Document} from 'mongoose'
 import {RichModelType} from 'mongoose-typescript'
 import {Constructor} from './index'
 import {IdType, toObjectId} from './mongodb'
@@ -33,15 +33,21 @@ function equals(a: unknown, b: unknown): boolean {
 }
 
 export function getBaseIdLoader<
-  TModel extends RichModelType<Constructor<TDocument>>,
-  TDocument = any,
+  TModel extends RichModelType<Constructor<object>>,
+  TDocument extends Document,
   TId extends IdType = IdType,
 >(
   model: TModel,
-  castId: TCastId = toObjectId,
+  castId: TCastId | false = toObjectId,
 ): DataLoader<TId, TDocument | undefined> {
   return new DataLoader<TId, TDocument | undefined>(async (ids) => {
-    const docs = await model.find({_id: {$in: ids.map(castId)}})
+    let castedIds: unknown[]
+    if (castId) {
+      castedIds = ids.map(castId)
+    } else {
+      castedIds = [...ids]
+    }
+    const docs: TDocument[] = await model.find({_id: {$in: castedIds}})
     return ids.map((id) => docs.find((doc) => equals(doc._id, id)))
   }, {
     cacheKeyFn(e): any {
