@@ -164,16 +164,16 @@ export async function saveDocs(docs: Document[], connection: Connection, session
 }
 
 export async function findAndCount<
-  TModel extends RichModelType<Constructor<TDocument>>,
-  TDocument = any
+  TModel extends RichModelType<Constructor<object>>,
+  TDocument = DocumentType<InstanceType<TModel>>,
 >(model: TModel, query: object, skip: number, limit: number,
-  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<DocumentType<InstanceType<TModel>>>> {
+  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<TDocument>> {
   const q = model.find(query).skip(skip).limit(limit)
   if (queryHelper) {
     queryHelper(q as ReturnType<TModel['find']>)
   }
   return Bluebird.props({
-    data: q.exec() as Promise<DocumentType<InstanceType<TModel>>[]>,
+    data: q.exec() as Promise<TDocument[]>,
     count: model.countDocuments(query),
   })
 }
