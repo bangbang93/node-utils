@@ -7,7 +7,7 @@ import {RequireExactlyOne} from 'type-fest'
 import {Constructor, Paged} from './index'
 
 export type IdType = string | Types.ObjectId
-export type NotDocument<T>  = T & {toObject: undefined}
+export type NotDocument<T>  = T & {toObject: never}
 
 type BuildQueryField<T> = keyof T | [keyof T, string] | {s: keyof T; m: string}
 
