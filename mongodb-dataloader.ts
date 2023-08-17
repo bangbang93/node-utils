@@ -33,7 +33,7 @@ function equals(a: unknown, b: unknown): boolean {
 }
 
 export function getBaseIdLoader<
-  TModel extends RichModelType<Constructor<object>>,
+  TModel extends RichModelType<Constructor<any>>,
   TDocument extends Document,
   TId extends IdType = IdType,
 >(

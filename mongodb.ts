@@ -164,7 +164,7 @@ export async function saveDocs(docs: Document[], connection: Connection, session
 }
 
 export async function findAndCount<
-  TModel extends RichModelType<Constructor<object>>,
+  TModel extends RichModelType<Constructor<any>>,
   TDocument = DocumentType<InstanceType<TModel>>,
 >(model: TModel, query: object, skip: number, limit: number,
   queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<TDocument>> {
