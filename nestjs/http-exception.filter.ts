@@ -105,7 +105,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
       if (this.env?.toLowerCase() !== 'production') {
         return stringify(data)
       } else {
-        return stringify(omit(data, 'stack'))
+        return stringify(data, omitCause)
       }
     }
     if (err instanceof VError) {
@@ -119,7 +119,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
         return stringify({
           ...pick(err, 'message', 'name'),
           ...info,
-        })
+        }, omitCause)
       }
     } else {
       if (this.env?.toLowerCase() !== 'production') {
@@ -131,7 +131,7 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
         return stringify({
           ...pick(err, 'message', 'name'),
           ...omit(err, 'stack'),
-        })
+        }, omitCause)
       }
     }
   }
@@ -145,4 +145,9 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
       return err['httpCode'] ?? err['status'] ?? err['statusCode'] ?? HttpStatus.INTERNAL_SERVER_ERROR
     }
   }
+}
+
+function omitCause(key: string, value: unknown): unknown {
+  if (key === 'cause') return undefined
+  return value
 }
