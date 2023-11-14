@@ -1,6 +1,6 @@
 {
   "name": "@bangbang93/utils",
-  "version": "6.7.6",
+  "version": "6.8.0",
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
