@@ -8,7 +8,6 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
-    "@bangbang93/service-errors": "^0.2.0",
     "@sindresorhus/is": "^4.0.0",
     "bluebird": "^3.7.2",
     "json-stringify-safe": "^5.0.1",

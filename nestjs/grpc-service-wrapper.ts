@@ -1,4 +1,4 @@
-import {createError, ServiceError, ServiceErrors} from '@bangbang93/service-errors'
+import {createError, ServiceError} from '@bangbang93/service-errors'
 import {Metadata} from '@grpc/grpc-js'
 import {RpcException} from '@nestjs/microservices'
 import is from '@sindresorhus/is'
@@ -47,7 +47,6 @@ export function grpcServiceWrapper<T extends object>(rawService: T): PromiseToOb
                 parsedError = createError.COMMON_UNKNOWN(err.message, {causedBy: err})
               }
 
-              ServiceError.appendStacktrace(parsedError)
               throw new ServiceError(parsedError.code, '', {
                 causedBy: parsedError,
                 httpCode: parsedError.httpCode,
