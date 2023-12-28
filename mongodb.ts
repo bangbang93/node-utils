@@ -132,18 +132,11 @@ export function buildQuery<T extends object, M = object>(search: T, args: IBuild
   }
 }
 
-/**
- *
- * @param fn
- * @param connection
- * @param session set false to skip session
- */
 export async function withSession<T>(
-  fn: (session?: ClientSession) => Promise<T>,
+  fn: (session: ClientSession) => Promise<T>,
   connection: Connection,
-  session?: ClientSession | null | false,
+  session?: ClientSession | null,
 ): Promise<T> {
-  if (session === false) return fn(undefined)
   if (session) {
     return fn(session)
   }
