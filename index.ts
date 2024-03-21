@@ -1,6 +1,4 @@
-import {createError} from '@bangbang93/service-errors'
 import is from '@sindresorhus/is'
-import stringify from 'json-stringify-safe'
 import {isNil, mapValues} from 'lodash'
 import ms from 'ms'
 import {deprecate} from 'util'
@@ -24,7 +22,7 @@ export function Deprecated(message: string): MethodDecorator {
   return (target, propertyKey, descriptor) => {
     if (descriptor.get) {
       descriptor.get = deprecate(descriptor.get, message)
-    } else if (is.function_(descriptor.value)) {
+    } else if (typeof descriptor.value === 'function') {
       descriptor.value = deprecate(descriptor.value, message)
     }
   }
@@ -38,7 +36,7 @@ export interface Paged<T> {
 export type ValueOf<T> = T[keyof T]
 
 export function toBoolean(value: string | number | boolean): boolean {
-  if (is.nullOrUndefined(value)) return value
+  if (isNil(value)) return value
   return [true, 'true', '1', 'yes', 1].includes(value)
 }
 
@@ -53,15 +51,3 @@ export function trimDeep<T extends object>(obj: T): T {
 }
 
 export * from './types'
-
-export function caughtError(e: unknown): Error {
-  if (is.error(e)) {
-    return e
-  }
-  if (is.object(e)) {
-    if ('message' in e && !isNil(e.message)) {
-      return createError.COMMON_UNKNOWN(e['message'] as string)
-    }
-  }
-  return createError.COMMON_UNKNOWN(stringify(e))
-}
