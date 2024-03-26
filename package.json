@@ -8,7 +8,7 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
-    "@sindresorhus/is": "^4.0.0",
+    "@sindresorhus/is": "^4.2.1",
     "bluebird": "^3.7.2",
     "json-stringify-safe": "^5.0.1",
     "lodash": "^4.17.19",
