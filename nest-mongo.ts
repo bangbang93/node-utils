@@ -1,11 +1,11 @@
 import {Param} from '@nestjs/common'
 import {InjectModel as InjectM} from '@nestjs/mongoose'
 import {getModelName} from 'mongoose-typescript'
-import {IMongooseClass} from 'mongoose-typescript/lib/meta'
+import {Constructor} from 'type-fest'
 import {ParseMongoidPipe} from './nestjs/parse-mongoid.pipe'
 
 export function InjectModel(
-  model: IMongooseClass,
+  model: Constructor<object>,
   connectionName?: string | undefined,
 ): ParameterDecorator & PropertyDecorator {
   return InjectM(getModelName(model), connectionName)

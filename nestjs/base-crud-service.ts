@@ -1,23 +1,24 @@
 import {Model} from 'mongoose'
 import {DocumentType, RichModelType} from 'mongoose-typescript'
-import {Constructor, DEFAULT_LIMIT, Paged} from '../index'
+import {Constructor} from 'type-fest'
+import {DEFAULT_LIMIT, Paged} from '../index'
 import {findAndCount, IdType, toObjectId} from '../mongodb'
 
-export abstract class BaseCrudService<T extends DocumentType<any>> {
+export abstract class BaseCrudService<T extends object, Doc = DocumentType<T>> {
   protected constructor(
     private readonly model: RichModelType<Constructor<T>>
   ) {}
 
-  public async getById(id: IdType): Promise<T | null> {
+  public async getById(id: IdType): Promise<Doc | null> {
     return this.model.findById(id)
   }
 
-  public async listByIds(ids: IdType[]): Promise<T[]> {
+  public async listByIds(ids: IdType[]): Promise<Doc[]> {
     return this.model.find({_id: {$in: ids.map(toObjectId)}} as any)
   }
 
-  public async create(data: any): Promise<T> {
-    return this.model.create(data)
+  public async create(data: object): Promise<Doc> {
+    return await this.model.create(data) as Doc
   }
 
   public async search(query: Record<string, unknown>, skip = 0, limit = DEFAULT_LIMIT,
