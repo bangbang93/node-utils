@@ -1,8 +1,8 @@
 import is from '@sindresorhus/is'
-import Bluebird from 'bluebird'
 import {escapeRegExp, isNil, max, min} from 'lodash'
 import {ClientSession, Connection, Document, FilterQuery, Types} from 'mongoose'
 import {DocumentType, RichModelType} from 'mongoose-typescript'
+import pProps from 'p-props'
 import {RequireExactlyOne} from 'type-fest'
 import {Constructor, Paged} from './index'
 
@@ -69,7 +69,7 @@ export function parseNumberQuery(query: string): NumberOperator {
 export function buildQuery<T extends object, M = object>(search: T, args: IBuildQueryArguments<T, M>): FilterQuery<M> {
   if (!search) return {}
   if (!is.object(search)) throw new TypeError('search must be an object')
-  const query: Record<string, unknown> = (args.query ?? {}) as Record<string, unknown>
+  const query: FilterQuery<Record<string, unknown>> = args.query ?? {}
   if (args.equalFields) {
     for (const field of args.equalFields) {
       const {s, m} = getFields(field)
@@ -165,8 +165,8 @@ export async function findAndCount<
   if (queryHelper) {
     queryHelper(q as ReturnType<TModel['find']>)
   }
-  return Bluebird.props({
+  return pProps({
     data: q.exec() as Promise<TDocument[]>,
-    count: model.countDocuments(query),
-  })
+    count: model.countDocuments(query) as Promise<number>,
+  }) as unknown as Paged<TDocument>
 }
