@@ -20,6 +20,17 @@ interface IBuildQueryArguments<T extends object, M = object> {
   query?: FilterQuery<M>
 }
 
+type IdName = `${string}Id`
+
+export type StringIdObject<T, Keys = IdName> = {
+  [K in keyof T]: K extends Keys
+    ? T[K] extends Types.ObjectId | undefined | null
+      ? T[K] extends undefined | null
+        ? IdType | T[K] : IdType
+      : T[K]
+    : T[K]
+}
+
 export function makeMongoRegexp(str: string, options = 'i'): {$regex: string; $options: string} {
   if (isNil(str)) return str
   return {
