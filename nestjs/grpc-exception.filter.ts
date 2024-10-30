@@ -1,20 +1,17 @@
 import {createError, ServiceError} from '@bangbang93/service-errors'
 import {Metadata, ServerUnaryCall} from '@grpc/grpc-js'
-import {ArgumentsHost, Catch, ExceptionFilter, HttpException, OnModuleInit} from '@nestjs/common'
+import {ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger} from '@nestjs/common'
 import {RpcException} from '@nestjs/microservices'
-import {stdSerializers} from 'bunyan'
 import {plainToInstance} from 'class-transformer'
-import {InjectLogger} from 'nestjs-bunyan'
 import {hostname} from 'os'
 import {Observable, throwError} from 'rxjs'
-import Logger = require('bunyan')
 
 /**
  * GRPC异常过滤器
  */
 @Catch()
-export class GrpcExceptionFilter implements ExceptionFilter, OnModuleInit {
-  @InjectLogger() private readonly logger!: Logger
+export class GrpcExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GrpcExceptionFilter.name)
 
   public catch(err: Error, host: ArgumentsHost): Observable<Error> {
     const [data, reqMetadata, call] = host.getArgs() as [unknown, Metadata, ServerUnaryCall<unknown, unknown>]
@@ -73,11 +70,5 @@ export class GrpcExceptionFilter implements ExceptionFilter, OnModuleInit {
       const serviceError = ServiceError.fromError(err as Error)
       return this.catch(serviceError, host)
     }
-  }
-
-  public onModuleInit(): void {
-    this.logger.addSerializers({
-      err: stdSerializers.err,
-    })
   }
 }

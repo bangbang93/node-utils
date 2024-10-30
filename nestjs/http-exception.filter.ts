@@ -1,18 +1,16 @@
 import {createError, ServiceError} from '@bangbang93/service-errors'
-import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, OnModuleInit} from '@nestjs/common'
+import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, Logger} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
-import {stdSerializers} from 'bunyan'
 import {plainToInstance} from 'class-transformer'
 import {Request, Response} from 'express'
 import stringify from 'json-stringify-safe'
 import {omit, pick} from 'lodash'
-import {InjectLogger} from 'nestjs-bunyan'
 import {VError} from 'verror'
-import Logger = require('bunyan')
+
 
 @Catch()
-export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
-  @InjectLogger() private readonly logger!: Logger
+export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name)
   private readonly env: string | undefined
   constructor(
   @Inject(ConfigService) configServiceOrEnv?: ConfigService | string
@@ -24,10 +22,6 @@ export class HttpExceptionFilter implements ExceptionFilter, OnModuleInit {
         this.env = configServiceOrEnv.get<string>('NODE_ENV', 'development')
       }
     }
-  }
-
-  public onModuleInit(): void {
-    this.logger.addSerializers(stdSerializers)
   }
 
   public catch(err: Error, host: ArgumentsHost): void {

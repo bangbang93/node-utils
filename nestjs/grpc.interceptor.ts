@@ -1,8 +1,6 @@
 import {Metadata, ServerUnaryCall} from '@grpc/grpc-js'
-import {CallHandler, ExecutionContext, Injectable, NestInterceptor} from '@nestjs/common'
-import * as Logger from 'bunyan'
+import {CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor} from '@nestjs/common'
 import {first} from 'lodash'
-import {InjectLogger} from 'nestjs-bunyan'
 import {hostname} from 'os'
 import {Observable} from 'rxjs'
 import {share, toArray} from 'rxjs/operators'
@@ -10,7 +8,7 @@ import {inspect} from 'util'
 
 @Injectable()
 export class GrpcInterceptor implements NestInterceptor {
-  @InjectLogger() private readonly logger!: Logger
+  private readonly logger = new Logger(GrpcInterceptor.name)
 
   public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> | Promise<Observable<unknown>> {
     if (context.getType() !== 'rpc') {
@@ -36,23 +34,23 @@ export class GrpcInterceptor implements NestInterceptor {
           call.sendMetadata(metadata)
           const end = new Date()
           const duration = end.valueOf() - start.valueOf()
-          if (this.logger.trace()) {
+          if (Logger.isLevelEnabled('verbose')) {
             const r = inspect(result, {depth: Infinity})
-            this.logger.trace({start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, result: r,
+            this.logger.verbose({start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, result: r,
               handler, reqNode})
           } else {
-            this.logger.info({handler, duration, reqNode})
+            this.logger.log({handler, duration, reqNode})
           }
         },
         error: (err) => {
           call.sendMetadata(metadata)
           const end = new Date()
           const duration = end.valueOf() - start.valueOf()
-          if (this.logger.trace()) {
-            this.logger.trace(err, {start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, handler,
+          if (Logger.isLevelEnabled('verbose')) {
+            this.logger.verbose(err, {start, end, duration, data, metadata: {req: reqMetadata, res: metadata}, handler,
               reqNode})
           } else {
-            this.logger.info(err, {handler, duration, reqNode})
+            this.logger.log(err, {handler, duration, reqNode})
           }
         },
       })
