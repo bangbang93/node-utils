@@ -84,12 +84,12 @@ export interface PagedResDto<T> {
   count: number
   data: T[]
 }
-export function PagedResDto<T extends Constructor>(constructor: T): Constructor<PagedResDto<T>> {
+export function PagedResDto<T extends Constructor>(constructor: T): Constructor<PagedResDto<InstanceType<T>>> {
   const name = `Paged${constructor.name}`
 
-  class PagedRes implements PagedResDto<T> {
+  class PagedRes implements PagedResDto<InstanceType<T>> {
     @ApiProperty() count!: number
-    @ApiProperty({type: [constructor]}) data!: T[]
+    @ApiProperty({type: [constructor]}) data!: InstanceType<T>[]
   }
 
   Reflect.defineProperty(PagedRes, 'name', {
