@@ -23,7 +23,7 @@ export abstract class BaseCrudService<T extends object, Doc = DocumentType<T>> {
 
   public async search(query: Record<string, unknown>, skip = 0, limit = DEFAULT_LIMIT,
     queryHelper?: (query: ReturnType<Model<T>['find']>) => void): Promise<Paged<T>> {
-    return findAndCount(this.model, query, skip, limit, queryHelper)
+    return findAndCount(this.model as any, query, skip, limit, queryHelper)
   }
 
   public async update(id: IdType, data: Partial<T>): Promise<void> {
