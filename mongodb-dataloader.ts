@@ -1,9 +1,9 @@
 import is from '@sindresorhus/is'
+import DataLoader from 'dataloader'
 import {Document} from 'mongoose'
 import {RichModelType} from 'mongoose-typescript'
 import {Constructor} from './index'
 import {IdType, toObjectId} from './mongodb'
-import DataLoader = require('dataloader')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TCastId = (id: IdType) => any

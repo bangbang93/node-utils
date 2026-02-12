@@ -14,7 +14,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GrpcExceptionFilter.name)
 
   public catch(err: Error, host: ArgumentsHost): Observable<Error> {
-    const [data, reqMetadata, call] = host.getArgs() as [unknown, Metadata, ServerUnaryCall<unknown, unknown>]
+    const [data, reqMetadata, call] = host.getArgs<[unknown, Metadata, ServerUnaryCall<unknown, unknown>]>()
     try {
       const metadata = new Metadata()
       metadata.set('x-req-node', hostname())
@@ -39,17 +39,17 @@ export class GrpcExceptionFilter implements ExceptionFilter {
         } else {
           return this.catch(error, host)
         }
-      } else if (err['code'] === 2 && err['details']) {
+      } else if (err['code'] === 2 && typeof err['details'] === 'string') {
         // is nested rpc error
         try {
-          const json = JSON.parse(err['details'])
-          if (json.$isServiceError) {
-            err = plainToInstance(ServiceError, json as object)
+          const json = JSON.parse(err['details']) as object
+          if (json['$isServiceError']) {
+            err = plainToInstance(ServiceError, json)
           } else {
-            err = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
+            err = createError.COMMON_UNKNOWN(json['message'] as string, {causedBy: err})
           }
-        } catch (e) {
-          return this.catch(createError.COMMON_UNKNOWN(err['details'], {causedBy: err}), host)
+        } catch {
+          return this.catch(createError.COMMON_UNKNOWN(err['details'] as string, {causedBy: err}), host)
         }
         return this.catch(err, host)
       } else {

@@ -21,6 +21,7 @@ export function applyWrappers(w = wrappers): void {
       return new Date(seconds * 1000 + (message.nanos ?? 0))
     },
   }
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const _toObject = w['.google.protobuf.Any'].toObject
   w['.google.protobuf.Any'].toObject = function toObject(message, options) {
     const msg = _toObject?.call(this, message, options)
@@ -35,6 +36,7 @@ export function applyWrappers(w = wrappers): void {
     if (number >= Number.MIN_SAFE_INTEGER && number <= Number.MAX_SAFE_INTEGER) {
       return this.toNumber()
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       return this.toString()
     }
   }

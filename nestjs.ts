@@ -25,7 +25,7 @@ interface IGenerateSwaggerOptions {
   }[]
 }
 
-export async function generateSwagger(appModule, options: IGenerateSwaggerOptions = {}): Promise<void> {
+export async function generateSwagger(appModule: Type, options: IGenerateSwaggerOptions = {}): Promise<void> {
   const app = await NestFactory.create(appModule)
 
   const builder = new DocumentBuilder()
@@ -115,7 +115,7 @@ export function ApiFile(fileName: string = 'file'): MethodDecorator {
           },
         },
       },
-    })
+    }),
   )
 }
 
@@ -164,6 +164,6 @@ export function ApiError<T extends ServiceErrorDefinition>(
           },
         },
       },
-    })
+    }),
   )
 }

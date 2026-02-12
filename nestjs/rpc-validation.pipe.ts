@@ -40,7 +40,7 @@ function flattenValidationErrors(
     flatten(validationErrors
       .map((error) => mapChildrenToValidationErrors(error)))
       .filter((item) => !!item.constraints)
-      .map((item) => item.constraints ? Object.values(item.constraints) : [])
+      .map((item) => item.constraints ? Object.values(item.constraints) : []),
   )
 }
 

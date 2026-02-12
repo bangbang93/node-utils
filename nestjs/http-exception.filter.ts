@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name)
   private readonly env: string | undefined
   constructor(
-  @Inject(ConfigService) configServiceOrEnv?: ConfigService | string
+  @Inject(ConfigService) configServiceOrEnv?: ConfigService | string,
   ) {
     if (configServiceOrEnv) {
       if (typeof configServiceOrEnv === 'string') {
@@ -39,16 +39,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return this.catch(childError, host)
     }
 
-    if (err['code'] === 2 && err['details']) {
+    if (err['code'] === 2 && typeof err['details'] === 'string') {
       try {
-        const json = JSON.parse(err['details'])
-        if (json.$isServiceError) {
-          err = plainToInstance(ServiceError, json as object)
+        const json = JSON.parse(err['details']) as object
+        if (json['$isServiceError']) {
+          err = plainToInstance(ServiceError, json)
         } else {
-          err = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
+          err = createError.COMMON_UNKNOWN(json['message'] as string, {causedBy: err})
         }
-      } catch (e) {
-        return this.catch(createError.COMMON_UNKNOWN(err['details'], {causedBy: err}), host)
+      } catch {
+        return this.catch(createError.COMMON_UNKNOWN(err['details'] as string, {causedBy: err}), host)
       }
       return this.catch(err, host)
     }
@@ -60,27 +60,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const resp = this.getResponse(err)
     const status = this.getHttpCode(err)
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR.valueOf()) {
       this.logger.error({
         err,
-        reqId: req['id'],
+        reqId: req.id,
         req: {
           method: req.method,
           url: req.originalUrl || req.url,
           remoteAddress: req.socket.remoteAddress,
           remotePort: req.socket.remotePort,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           body: req.body,
         },
       })
     } else {
       this.logger.debug({
         err,
-        reqId: req['id'],
+        reqId: req.id,
         req: {
           method: req.method,
           url: req.originalUrl || req.url,
           remoteAddress: req.socket.remoteAddress,
           remotePort: req.socket.remotePort,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           body: req.body,
         },
       })
@@ -136,6 +138,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     } else if (err instanceof HttpException) {
       return err.getStatus()
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return err['httpCode'] ?? err['status'] ?? err['statusCode'] ?? HttpStatus.INTERNAL_SERVER_ERROR
     }
   }
@@ -144,4 +147,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
 function omitStack(key: string, value: unknown): unknown {
   if (key === 'stack') return undefined
   return value
+}
+declare module 'http' {
+  interface IncomingMessage {
+    id: string;
+  }
 }

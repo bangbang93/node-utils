@@ -29,41 +29,47 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
     return this._service
   }
 
-  public onModuleInit(): any {
+  public onModuleInit(): void {
     const rawService = this.moduleRef.get<ClientGrpc>(`GRPC-${this.serviceName}`).getService(this.serviceName)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this._service = new Proxy(rawService, {
       get: (target, propKey) => {
-        if (!is.string(propKey)) return rawService[propKey]
+        if (!is.string(propKey)) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return rawService[propKey]
+        }
         if (!(propKey in rawService)) return undefined
         const prop: unknown = rawService[propKey]
         if (is.function_(prop)) {
           return (data: unknown, metadata?: Metadata): Observable<unknown> => {
             metadata ??= new Metadata()
             metadata.set('x-req-node', hostname())
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const res$: Observable<unknown> = prop.call(rawService, data, metadata)
             return res$.pipe(
               catchError((err: RpcException) => {
                 let parsedError: Error = err
-                if (err['code'] === 2 && err['details']) {
+                if (err['code'] === 2 && typeof err['details'] === 'string') {
                   try {
-                    const json = JSON.parse(err['details'])
-                    if (json.$isServiceError) {
-                      parsedError = plainToInstance(ServiceError, json as object)
+                    const json = JSON.parse(err['details']) as object
+                    if (json['$isServiceError']) {
+                      parsedError = plainToInstance(ServiceError, json)
                     } else {
-                      parsedError = createError.COMMON_UNKNOWN(json.message, {causedBy: err})
+                      parsedError = createError.COMMON_UNKNOWN(json['message'] as string, {causedBy: err})
                     }
-                  } catch (e) {
-                    let detail = err['details']
+                  } catch {
+                    const detail = err['details']
+                    let detailObj: object | undefined  = undefined
                     try {
-                      detail = JSON.parse(err['details'])
-                      if (detail.$isServiceError) {
-                        detail = plainToInstance(ServiceError, detail)
+                      detailObj = JSON.parse(err['details']) as object
+                      if (detail['$isServiceError']) {
+                        detailObj = plainToInstance(ServiceError, detail)
                       }
-                    } catch (e) {/* ignore */}
-                    if (detail instanceof ServiceError) {
-                      throw detail
+                    } catch {/* ignore */}
+                    if (detailObj instanceof ServiceError) {
+                      throw detailObj
                     } else {
-                      throw createError.COMMON_UNKNOWN(detail.message, {causedBy: detail})
+                      throw createError.COMMON_UNKNOWN(detail['message'] as string, {causedBy: detailObj as Error})
                     }
                   }
                 }
@@ -78,12 +84,13 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
                   metadata,
                   causedBy: parsedError,
                 })
-              })
+              }),
             )
           }
         }
         return prop
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
   }
 
@@ -92,7 +99,7 @@ export abstract class BaseRpcService<T> implements OnModuleInit {
       map((e) => ({
         count: e.count ?? 0,
         data: e.data ?? [],
-      }))
+      })),
     )
   }
 }

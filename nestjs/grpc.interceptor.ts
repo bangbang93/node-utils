@@ -14,12 +14,13 @@ export class GrpcInterceptor implements NestInterceptor {
     if (context.getType() !== 'rpc') {
       return next.handle()
     }
-    const [data, reqMetadata, call] = context.getArgs() as [unknown, Metadata, ServerUnaryCall<unknown, unknown>]
+    const [data, reqMetadata, call] = context.getArgs<[unknown, Metadata, ServerUnaryCall<unknown, unknown>]>()
     const start = new Date()
     const metadata = new Metadata()
     metadata.set('x-req-node', hostname())
     const reqId = first(reqMetadata.get('x-request-id'))
     const reqNode = first(reqMetadata.get('x-req-node'))
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     reqId && metadata.set('x-request-id', reqId)
     const handler = `${context.getClass().name}.${context.getHandler().name}`
     const res$ = next.handle()

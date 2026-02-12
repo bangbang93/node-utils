@@ -6,7 +6,7 @@ import {ParseMongoidPipe} from './nestjs/parse-mongoid.pipe'
 
 export function InjectModel(
   model: Constructor<object>,
-  connectionName?: string | undefined,
+  connectionName?: string,
 ): ParameterDecorator & PropertyDecorator {
   return InjectM(getModelName(model), connectionName)
 }

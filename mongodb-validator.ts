@@ -1,4 +1,4 @@
 import {Transform} from 'class-transformer'
 import {toObjectId} from './mongodb'
 
-export const ToMongoId: () => PropertyDecorator = () => Transform(({value}) => toObjectId(value))
+export const ToMongoId: () => PropertyDecorator = () => Transform(({value}: {value: string}) => toObjectId(value))
