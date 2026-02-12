@@ -1,6 +1,6 @@
 import is from '@sindresorhus/is'
 import {escapeRegExp, isNil, max, min} from 'lodash'
-import {ClientSession, Connection, Document, FilterQuery, Types} from 'mongoose'
+import {ClientSession, Connection, Document, FilterQuery, SortOrder, Types} from 'mongoose'
 import {DocumentType, RichModelType} from 'mongoose-typescript'
 import pProps from 'p-props'
 import {RequireExactlyOne} from 'type-fest'
@@ -167,17 +167,26 @@ export async function saveDocs(docs: Document[], connection: Connection, session
   }, connection, session)
 }
 
+type QueryHelper<TModel extends RichModelType<Constructor<any>>> = (query: ReturnType<TModel['find']>) => void
+type Sortable = string | { [key: string]: SortOrder | { $meta: 'textScore' } } | [string, SortOrder][]
+
 export async function findAndCount<
   TModel extends RichModelType<Constructor<any>>,
   TDocument = DocumentType<InstanceType<TModel>>,
->(model: TModel, query: object, skip: number, limit: number,
-  queryHelper?: (query: ReturnType<TModel['find']>) => void): Promise<Paged<TDocument>> {
+>(model: TModel, query: object, skip: number, limit: number, sort?: Sortable | QueryHelper<TModel>,
+  queryHelper?: (query: ReturnType<TModel['find']>) => void | Promise<void>): Promise<Paged<TDocument>> {
   const q = model.find(query).skip(skip).limit(limit)
-  if (queryHelper) {
-    queryHelper(q as ReturnType<TModel['find']>)
+  if (typeof sort === 'object' || typeof sort === 'string') {
+    void q.sort(sort)
+  } else {
+    queryHelper = sort
   }
-  return pProps({
-    data: q.exec() as Promise<TDocument[]>,
-    count: model.countDocuments(query) as Promise<number>,
+  if (queryHelper) {
+    const r = queryHelper(q as ReturnType<TModel['find']>)
+    if (r !== undefined) await r
+  }
+  return await pProps({
+    data: q.exec(),
+    count: model.countDocuments(query),
   }) as unknown as Paged<TDocument>
 }
