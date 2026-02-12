@@ -1,5 +1,5 @@
 import is from '@sindresorhus/is'
-import {isNil, mapValues} from 'lodash'
+import {mapValues} from 'lodash'
 import ms from 'ms'
 import {deprecate} from 'util'
 
@@ -15,13 +15,8 @@ export const DEFAULT_LIMIT = 10
 
 export type Fn = (...args: unknown[]) => unknown
 
-export interface Constructor<T = unknown> {
-  prototype: Prototype
-
-  new(...args: unknown[]): T
-}
-
-export type Prototype = object
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor<T = any> = new(...args: any[]) => T
 
 export function Deprecated(message: string): MethodDecorator {
   return (target, propertyKey, descriptor) => {

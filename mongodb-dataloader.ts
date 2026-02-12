@@ -5,8 +5,10 @@ import {Constructor} from './index'
 import {IdType, toObjectId} from './mongodb'
 import DataLoader = require('dataloader')
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TCastId = (id: IdType) => any
 
+/* eslint-disable @typescript-eslint/no-base-to-string */
 function equals(a: unknown, b: unknown): boolean {
   if (is.primitive(a)) {
     if (is.primitive(b)) {
@@ -31,8 +33,10 @@ function equals(a: unknown, b: unknown): boolean {
   }
   return false
 }
+/* eslint-enable @typescript-eslint/no-base-to-string */
 
 export function getBaseIdLoader<
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   TModel extends RichModelType<Constructor<any>>,
   TDocument extends Document,
   TId extends IdType = IdType,
@@ -50,6 +54,7 @@ export function getBaseIdLoader<
     const docs: TDocument[] = await model.find({_id: {$in: castedIds}})
     return ids.map((id) => docs.find((doc) => equals(doc._id, id)))
   }, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheKeyFn(e): any {
       if (is.primitive(e)) {
         return e
