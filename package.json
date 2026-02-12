@@ -1,8 +1,21 @@
 {
   "name": "@bangbang93/utils",
   "version": "6.12.2",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "require": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/*.js",
+      "require": "./lib/*.js",
+      "types": "./lib/*.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "license": "MIT",
   "repository": {
     "url": "https://github.com/bangbang93/node-utils"
@@ -24,9 +37,7 @@
     "test": "jest --coverage"
   },
   "files": [
-    "**/*.js",
-    "**/*.d.ts",
-    "**/*.js.map"
+    "lib"
   ],
   "devDependencies": {
     "@bangbang93/eslint-config-recommended": "^2.0.0",
