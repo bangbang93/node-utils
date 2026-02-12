@@ -41,6 +41,8 @@ export interface Paged<T> {
 export type ValueOf<T> = T[keyof T]
 
 export function toBoolean(value: string | number | boolean): boolean
+export function toBoolean(value: string | number | boolean | null): boolean | null
+export function toBoolean(value: string | number | boolean | undefined): boolean | undefined
 export function toBoolean(value: string | number | boolean | null | undefined): boolean | null | undefined
 export function toBoolean(value: string | number | boolean | null | undefined): boolean | null | undefined {
   if (is.nullOrUndefined(value)) return value
