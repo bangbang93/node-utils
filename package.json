@@ -10,7 +10,7 @@
   "dependencies": {
     "@sindresorhus/is": "^4.0.0",
     "json-stringify-safe": "^5.0.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.23",
     "ms": "^2.1.2",
     "p-props": "^4.0.0",
     "reflect-metadata": "^0.1.13",
