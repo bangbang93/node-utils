@@ -54,9 +54,3 @@ declare module 'protobufjs' {
     toNumber(): number
   }
 }
-
-declare module 'long' {
-  interface Long {
-    toJSON(): number | string
-  }
-}
