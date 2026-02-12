@@ -1,6 +1,6 @@
 {
   "name": "@bangbang93/utils",
-  "version": "6.12.2",
+  "version": "6.13.0-0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
