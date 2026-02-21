@@ -5,5 +5,7 @@ git:
   commit: true
   push: true
   tag: true
-hooks:
-  after:version:bump: auto-changelog -p
+plugins:
+  '@release-it/conventional-changelog':
+      preset:
+        name: angular
