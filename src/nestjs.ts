@@ -4,13 +4,18 @@ import {NestFactory} from '@nestjs/core'
 import {
   ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiPropertyOptional, ApiResponse, DocumentBuilder, SwaggerModule,
 } from '@nestjs/swagger'
-import {ServerVariableObject} from '@nestjs/swagger/dist/interfaces/open-api-spec.interface'
 import {IsInt, IsMongoId, IsOptional, Matches, Max, Min} from 'class-validator'
 import {writeFileSync} from 'fs'
 import * as path from 'path'
 import {Constructor} from './index'
 
 export const ApiSummary = (summary: string): MethodDecorator => ApiOperation({summary})
+
+interface ServerVariableObject {
+  enum?: string[] | boolean[] | number[]
+  default: string | boolean | number
+  description?: string
+}
 
 interface IGenerateSwaggerOptions {
   title?: string
