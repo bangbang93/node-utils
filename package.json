@@ -21,6 +21,7 @@
     "url": "https://github.com/bangbang93/node-utils"
   },
   "dependencies": {
+    "@hackylabs/deep-redact": "^4.1.0",
     "@sindresorhus/is": "^4.0.0",
     "json-stringify-safe": "^5.0.1",
     "lodash": "^4.17.19",

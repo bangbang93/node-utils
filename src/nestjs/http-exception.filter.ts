@@ -4,24 +4,29 @@ import {ConfigService} from '@nestjs/config'
 import {plainToInstance} from 'class-transformer'
 import {Request, Response} from 'express'
 import stringify from 'json-stringify-safe'
-import {omit, pick} from 'lodash'
-import {VError} from 'verror'
+import {redactForLog} from './log-redactor'
+
+const STATUS_ERROR_CODE: Record<number, string> = {
+  [HttpStatus.BAD_REQUEST]: 'COMMON_INVALID_PARAMETER',
+  [HttpStatus.UNAUTHORIZED]: 'COMMON_NEED_LOGIN',
+  [HttpStatus.FORBIDDEN]: 'COMMON_PERMISSION_DENIED',
+  [HttpStatus.NOT_FOUND]: 'COMMON_NO_SUCH_OBJECT',
+  [HttpStatus.CONFLICT]: 'COMMON_ALREADY_EXISTS',
+}
 
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name)
-  private readonly env: string | undefined
+  private readonly isProduction: boolean
+
   constructor(
-  @Inject(ConfigService) configServiceOrEnv?: ConfigService | string,
+    @Inject(ConfigService) configServiceOrEnv?: ConfigService | string,
   ) {
-    if (configServiceOrEnv) {
-      if (typeof configServiceOrEnv === 'string') {
-        this.env = configServiceOrEnv
-      } else {
-        this.env = configServiceOrEnv.get<string>('NODE_ENV', 'development')
-      }
-    }
+    const env = typeof configServiceOrEnv === 'string'
+      ? configServiceOrEnv
+      : configServiceOrEnv?.get<string>('NODE_ENV', 'development')
+    this.isProduction = env?.toLowerCase() === 'production'
   }
 
   public catch(err: Error, host: ArgumentsHost): void {
@@ -29,127 +34,78 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const req = ctx.getRequest<Request>()
     const res = ctx.getResponse<Response>()
 
-    if (err instanceof HttpException) {
-      const data = err.getResponse()
-      const childError = new ServiceError('COMMON_UNKNOWN', '未知错误', {
-        httpCode: err.getStatus(),
-        causedBy: err,
-        ...typeof data === 'string' ? {} : data,
-      })
-      return this.catch(childError, host)
-    }
+    const serviceError = this.toServiceError(err)
+    const status = serviceError.httpCode ?? HttpStatus.INTERNAL_SERVER_ERROR
 
-    if (err['code'] === 2 && typeof err['details'] === 'string') {
-      try {
-        const json = JSON.parse(err['details']) as object
-        if (json['$isServiceError']) {
-          err = plainToInstance(ServiceError, json)
-        } else {
-          err = createError.COMMON_UNKNOWN(json['message'] as string, {causedBy: err})
-        }
-      } catch {
-        return this.catch(createError.COMMON_UNKNOWN(err['details'] as string, {causedBy: err}), host)
-      }
-      return this.catch(err, host)
+    const log = {
+      err: serviceError,
+      reqId: req.id,
+      req: redactForLog({
+        method: req.method,
+        url: req.originalUrl || req.url,
+        remoteAddress: req.socket.remoteAddress,
+        remotePort: req.socket.remotePort,
+        body: req.body as unknown,
+      }),
     }
-
-    if (!(err instanceof ServiceError)) {
-      const childError = ServiceError.fromError(err)
-      return this.catch(childError, host)
-    }
-
-    const resp = this.getResponse(err)
-    const status = this.getHttpCode(err)
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR.valueOf()) {
-      this.logger.error({
-        err,
-        reqId: req.id,
-        req: {
-          method: req.method,
-          url: req.originalUrl || req.url,
-          remoteAddress: req.socket.remoteAddress,
-          remotePort: req.socket.remotePort,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          body: req.body,
-        },
-      })
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR.valueOf()) {
+      this.logger.error(log)
     } else {
-      this.logger.debug({
-        err,
-        reqId: req.id,
-        req: {
-          method: req.method,
-          url: req.originalUrl || req.url,
-          remoteAddress: req.socket.remoteAddress,
-          remotePort: req.socket.remotePort,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          body: req.body,
-        },
-      })
+      this.logger.warn(log)
     }
 
     if (res.headersSent) return
 
     res.status(status)
       .type('json')
-      .end(resp)
+      .end(stringify(this.getResponseBody(serviceError)))
   }
 
-  private getResponse(err: Error): string {
-    if (err instanceof ServiceError) {
-      const data = err.toJSON()
-      if (this.env?.toLowerCase() !== 'production') {
-        return stringify(data)
-      } else {
-        return stringify(data, omitStack)
+  private toServiceError(err: Error): ServiceError {
+    if (ServiceError.isServiceError(err)) return err
+    if (err instanceof HttpException) {
+      const status = err.getStatus()
+      return new ServiceError(STATUS_ERROR_CODE[status] ?? 'COMMON_UNKNOWN', getPublicMessage(err), {
+        httpCode: status,
+      })
+    }
+    if (err['code'] === 2 && typeof err['details'] === 'string') {
+      // gRPC 客户端抛出的错误：details 是上游序列化的 ServiceError 或一段描述文本
+      try {
+        const json = JSON.parse(err['details']) as object
+        if (json['$isServiceError']) {
+          return plainToInstance(ServiceError, json)
+        }
+        return createError.COMMON_UNKNOWN(json['message'] as string, {causedBy: err})
+      } catch {
+        return createError.COMMON_UNKNOWN(err['details'], {causedBy: err})
       }
     }
-    if (err instanceof VError) {
-      const info = VError.info(err)
-      if (this.env?.toLowerCase() !== 'production') {
-        return stringify({
-          ...pick(err, 'message', 'name', 'stack'),
-          ...info,
-        })
-      } else {
-        return stringify({
-          ...pick(err, 'message', 'name'),
-          ...info,
-        }, omitStack)
-      }
-    } else {
-      if (this.env?.toLowerCase() !== 'production') {
-        return stringify({
-          ...pick(err, 'message', 'name', 'stack'),
-          ...err,
-        })
-      } else {
-        return stringify({
-          ...pick(err, 'message', 'name'),
-          ...omit(err, 'stack'),
-        }, omitStack)
-      }
-    }
+    return ServiceError.fromError(err)
   }
 
-  private getHttpCode(err: Error): number {
-    if (err instanceof ServiceError) {
-      return err.httpCode ?? HttpStatus.INTERNAL_SERVER_ERROR
-    } else if (err instanceof HttpException) {
-      return err.getStatus()
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return err['httpCode'] ?? err['status'] ?? err['statusCode'] ?? HttpStatus.INTERNAL_SERVER_ERROR
-    }
+  private getResponseBody(err: ServiceError): Record<string, unknown> {
+    const body = err.toJSON()
+    if (!this.isProduction) return body
+    delete body.stack
+    delete body.cause
+    // ServiceError 的 message 是「自身消息: cause 消息」的拼接，带 cause 即含内部细节
+    if (err.cause !== undefined && err.cause !== null) body.message = '未知错误'
+    return body
   }
 }
 
-function omitStack(key: string, value: unknown): unknown {
-  if (key === 'stack') return undefined
-  return value
+function getPublicMessage(err: HttpException): string {
+  const response = err.getResponse()
+  if (typeof response === 'string') return response
+  const message = (response as {message?: unknown}).message
+  if (typeof message === 'string') return message
+  if (Array.isArray(message)) return message.join('；')
+  return err.message
 }
+
 declare module 'http' {
   interface IncomingMessage {
-    id: string;
+    id: string
   }
 }
